@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blog</title>
+</head>
+<body>
+    <h1>Posts del Blog</h1>
+    <ul>
+    {% for post in posts %}
+        <li>{{ post.titulo }} - {{ post.fecha }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
