@@ -6,9 +6,6 @@ from django.http import HttpResponse
 def index(request):
     return render(request,'prueba/index.html' )
 
-def funcion(request):
-    return render(request,"prueba/funcion.html")
-
 def ejercitar(request):
     return render(request,"prueba/ejercitar.html")
 
@@ -17,6 +14,12 @@ def sandbox(request):
 
 def inicio(request):
     return render(request, 'prueba/index.html')
+
+def funcion_sandbox(request): 
+    return render(request, 'prueba/funcion_sandbox.html')
+
+def funcion_ejercitar(request): 
+    return render(request,"prueba/funcion_ejercitar.html")
 
 # blog/views.py
 from .models import Post

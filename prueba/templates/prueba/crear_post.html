@@ -1,6 +1,0 @@
-<h1>Crear Post</h1>
-<form method="POST">
-    {% csrf_token %}  <!-- Protección contra ataques CSRF -->
-    {{ form.as_p }}   <!-- Renderiza el formulario en párrafos -->
-    <button type="submit">Guardar</button>
-</form>
