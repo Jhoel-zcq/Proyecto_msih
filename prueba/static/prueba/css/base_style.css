@@ -1,5 +1,3 @@
-#separar1{
-    height: 50px;
-    width: 1000px;
-    text-align:right;
+.nav-item.nav-link{
+    color: rgb(13, 0, 255);
 }
