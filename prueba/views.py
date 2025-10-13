@@ -1,7 +1,12 @@
+#mish/prueba/views.py
 from django.shortcuts import render , redirect
+import random
 from django.http import HttpResponse
 from random import choice
 from .forms import PostForm
+#funciones de utlis
+from .utils.ejercicios_tiempo_y_distancia import generar_ejercicios_tiempo_y_distancia
+
 # Create your views here.
 
 #paginas html
@@ -34,7 +39,51 @@ def pagina_aleatoria_fis111(request):
 
 #FIS100
 def Tiempo_y_distancia(request):
-    return render(request,"prueba/fis100/Tiempo_y_distancia.html")
+    if 'ejercicio' not in request.session:
+        ejercicio=generar_ejercicios_tiempo_y_distancia()
+        request.session['ejercicio'] = ejercicio
+        request.session['intentos'] = 0
+    else :
+        ejercicio = request.session['ejercicio']
+    
+    mensaje = ""
+    mostrar_pista=False
+    mostrar_solucion = False
+    if request.method == 'POST':
+        respuesta_usuario = request.POST.get('respuesta')
+        ver_solucion = request.POST.get('ver_solucion')
+        otro = request.POST.get('otro')
+        if otro:
+            ejercicio= generar_ejercicios_tiempo_y_distancia()
+            request.session['ejercicio'] = ejercicio
+            request.session['intentos'] = 0
+            return render(request,'prueba/fis100/Tiempo_y_distancia.html',{'ejercicio':ejercicio})
+        
+        if ver_solucion:
+            mostrar_solucion = True
+        else:
+            try:
+                valor_usuario = float(respuesta_usuario)
+                valor_correcto = ejercicio['valor_correcto']
+                diferencia = abs(valor_usuario - valor_correcto)
+                
+                if diferencia < 0.01:
+                    mensaje = "¡CORECTO!"
+                    mostrar_solucion = True
+                else: 
+                    mensaje = "incorrecto"
+                    request.session['intentos'] +=1
+                    if request.session['intentos'] >=1:
+                        mostrar_pista = True
+            except ValueError:
+                mensaje = "por favor, ingresa un número válido."
+    contexto = {
+        'ejercicio':ejercicio,
+        'mensaje' : mensaje,
+        'mostrar_pista':mostrar_pista,
+        'mostrar_solucion' : mostrar_solucion,
+    }
+    return render(request,"prueba/fis100/Tiempo_y_distancia.html", contexto)
 
 def Medición(request):
     return render(request, "prueba/fis100/Medición.html")

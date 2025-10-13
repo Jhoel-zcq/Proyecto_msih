@@ -5,6 +5,36 @@
 
 {% block contenido  %}
 <h1>Tiempo y distancia</h1>
+<p> {{ejercicio.enunciado}}</p>
 
+<form method="post">
+    {% csrf_token %}
+    <label for="respuesta">Tu respuesta:</label>
+    <input type="text" name="respuesta" required>
+    <button type="submit">Comprobar</button>
+</form>
+    
+{% if mensaje %}
+    <p>{{ mensaje }}</p>
+{% endif %}
+
+{% if mostrar_pista %}
+    <p><strong>Pista:</strong> Usa la fórmula: {{ ejercicio.formula }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="ver_solucion" value="1">Ver solución completa</button>
+    </form>
+{% endif %}
+
+{% if mostrar_solucion %}
+    <p><strong>Solución completa:</strong></p>
+    <p>{{ ejercicio.formula }}</p>
+    <p>Resultado: {{ ejercicio.valor_correcto }} {{ ejercicio.unidades.resultado }}</p>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="otro" value="1">🔄 Otro ejercicio</button>
+</form>
 
 {% endblock %}
