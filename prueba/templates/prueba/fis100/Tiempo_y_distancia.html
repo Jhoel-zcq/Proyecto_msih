@@ -1,0 +1,49 @@
+<!-- mish/prueba/templates/prueba/fis100/tiempo_y_distancia.html -->
+{% extends 'prueba/base.html' %}
+{% load static %}
+{% block titulo %} Tiempo y distancia {% endblock %}
+{% block  css %} <link rel="stylesheet" href="{% static 'prueba/css/fis100/Tiempo_y_distancia_style.css' %}"> {%endblock%}
+
+{% block contenido  %}
+<img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
+<h1 class="title">Tiempo y distancia</h1>
+{% if ejercicio_imagen %}
+    <div class="text-center my-3">
+        <img src="{{ ejercicio.imagen }}" alt="Imagen del ejercicio" width="400" height="200">
+    </div>
+{% endif %}
+<p class="enunciado"> {{ejercicio.enunciado}}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <label class="a" for="respuesta">Tu respuesta:</label>
+    <input class="imput_respuesta" type="text" name="respuesta" required placeholder="Solo coloque el valor numerico" >
+    <button class="boton_enviar" type="submit">Comprobar</button>
+</form>
+    
+{% if mensaje %}
+    <p class="mensaje">{{ mensaje }}</p>
+{% endif %}
+
+{% if mostrar_pista %}
+    <p><strong>Pista:</strong> Usa la fórmula: {{ ejercicio.formula }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="ver_solucion" value="1">Ver solución completa</button>
+    </form>
+{% endif %}
+
+{% if mostrar_solucion %}
+    <div class="solucion">
+    <h5> Desarrollo:</h5>
+    <pre>{{ ejercicio.desarrollo }}</pre>
+    <p><strong>Resultado final:</strong> {{ ejercicio.valor_correcto }} {{ ejercicio.unidades.resultado }}</p>
+    </div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <button class="boton_otro_ejercicio" type="submit" name="otro" value="1">🔄 Otro ejercicio</button>
+</form>
+
+{% endblock %}

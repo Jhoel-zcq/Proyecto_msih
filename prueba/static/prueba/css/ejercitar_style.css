@@ -1,0 +1,36 @@
+.unidades_fis100{
+    color: black;
+    text-decoration: none;
+}
+
+.unidades_fis111 {
+    color: black;
+    text-decoration: none;
+}
+.mish {
+    color: red;
+    font-size: 30px;
+}
+h1{
+    font-size: 27px;
+}
+h2 {
+    color: red;
+}
+form{
+    border: 2px solid whitesmoke;
+    border-radius: 20px;
+    padding: 0;
+    width: 253.5px;
+}
+.boton_aleatorio {
+    color: black;
+    margin: 0 0 0 0;
+    background-color: rgb(0, 238, 255);
+    padding: 5px;
+    border: 2px solid white;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    width: 250px;
+}
