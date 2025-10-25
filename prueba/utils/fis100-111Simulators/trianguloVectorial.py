@@ -1,4 +1,3 @@
-#mish/prueba/utils/trianguloVectorial.py
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.text import Annotation
@@ -33,10 +32,10 @@ class AngleAnnotation(Arc):
 
             * "pixels": pixels
             * "points": points, use points instead of pixels to not have a
-            dependence on the DPI
+              dependence on the DPI
             * "axes width", "axes height": relative units of Axes width, height
             * "axes min", "axes max": minimum or maximum of relative Axes
-            width, height
+              width, height
 
         ax : `matplotlib.axes.Axes`
             The Axes to add the angle annotation to.
@@ -46,7 +45,7 @@ class AngleAnnotation(Arc):
 
         textposition : {"inside", "outside", "edge"}
             Whether to show the text in- or outside the arc. "edge" can be used
-            for custom positions anchored at the arc's edge.
+            for custom positions anchored at the arc"s edge.
 
         text_kw : dict
             Dictionary of arguments passed to the Annotation.
@@ -71,9 +70,9 @@ class AngleAnnotation(Arc):
         self.ax.add_patch(self)
 
         self.kw = dict(ha="center", va="center",
-                    xycoords=IdentityTransform(),
-                    xytext=(0, 0), textcoords="offset points",
-                    annotation_clip=True)
+                       xycoords=IdentityTransform(),
+                       xytext=(0, 0), textcoords="offset points",
+                       annotation_clip=True)
         self.kw.update(text_kw or {})
         self.text = ax.annotate(text, xy=self._center, **self.kw)
 
@@ -84,8 +83,8 @@ class AngleAnnotation(Arc):
         elif self.unit[:4] == "axes":
             b = TransformedBbox(Bbox.unit(), self.ax.transAxes)
             dic = {"max": max(b.width, b.height),
-                "min": min(b.width, b.height),
-                "width": b.width, "height": b.height}
+                   "min": min(b.width, b.height),
+                   "width": b.width, "height": b.height}
             factor = dic[self.unit[5:]]
         return self.size * factor
 
@@ -133,7 +132,7 @@ class AngleAnnotation(Arc):
         r = s / 2
         if self.textposition == "inside":
             r = s / np.interp(angle_span, [60, 90, 135, 180],
-                                        [3.3, 3.5, 3.8, 4])
+                                          [3.3, 3.5, 3.8, 4])
         self.text.xy = c + r * np.array([np.cos(angle), np.sin(angle)])
         if self.textposition == "outside":
             def R90(a, r, w, h):
@@ -148,7 +147,7 @@ class AngleAnnotation(Arc):
 
             def R(a, r, w, h):
                 aa = (a % (np.pi/4))*((a % (np.pi/2)) <= np.pi/4) + \
-                    (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
+                     (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
                 return R90(aa, r, *[w, h][::int(np.sign(np.cos(2*a)))])
 
             bbox = self.text.get_window_extent()
@@ -173,17 +172,14 @@ def trianguloDesplazamiento(vi, angv, tf,
     viy = vi * math.sin(math.radians(angv))
 
     grav = 10   # gravedad redondeada
-    dt = 2.5      # delta tiempo
     dt = tf      # delta tiempo
 
 
     velocidad = FancyArrowPatch((0, 0), 
                                 (vix*dt, viy*dt), 
-                                color='xkcd:cobalt blue', 
+                                color="xkcd:cobalt blue", 
                                 mutation_scale=20)
-    ax.annotate(r'$\vec{v_0} \Delta t$', xy=(vix*dt/2, viy*dt/2))
-
-    ax.annotate(r'$\vec{v}_0 \Delta t$', 
+    ax.annotate(r"$\vec{v}_0 \Delta t$", 
                 xy=(vix*dt/2, viy*dt/2),
                 xytext=(-25,7),
                 textcoords="offset points",
@@ -191,52 +187,40 @@ def trianguloDesplazamiento(vi, angv, tf,
     
     aceleracion = FancyArrowPatch((vix*dt,viy*dt),
                                 (vix*dt, viy * dt - grav * dt**2),
-                                color='xkcd:scarlet',
+                                color="xkcd:scarlet",
                                 mutation_scale=20)
-    ax.annotate(r'$\vec{g} \Delta t^2$',xy=(vix*dt, (viy * dt - (grav / 2) * dt**2)))
-    ax.annotate(r'$\vec{g} \Delta t^2$',
+    ax.annotate(r"$\vec{g} \Delta t^2$",
                 xy=(vix*dt, (viy * dt - (grav / 2) * dt**2)),
                 xytext=(7,0),
                 textcoords="offset points",
-                fontsize=12)
+            fontsize=12)
 
     desplazamiento = FancyArrowPatch((0, 0),
-                                    (vix*dt, viy * dt - grav*dt**2),
-                                    color='xkcd:steel grey',
-                                    mutation_scale=20)
-    ax.annotate(r'$\vec{D}$',(vix*dt/2,(viy * dt - grav*dt**2)/2), textcoords="offset points")
-    #velocidad = FancyArrow(0, 0, vix, viy, width=0.4, color='r', length_includes_head=True)
-    ax.annotate(r'$\vec{D}$',
+                                     (vix*dt, viy * dt - grav*dt**2),
+                                     color="xkcd:steel grey",
+                                     mutation_scale=20)
+    ax.annotate(r"$\vec{D}$",
                 (vix*dt/2,(viy * dt - grav*dt**2)/2),
                 xytext=(-25,-15), 
                 textcoords="offset points",
                 fontsize=12)
 
 
-    AngleAnnotation((0,0), 
-                    (vix*dt,0), 
-                    (vix*dt,viy*dt),
-                    size=300, 
-                    ax=ax, text=str(angv)+'°',
-                    textposition='outside',
-                    unit="pixels")
 
-    ax.axhline(0, 0, vix * dt / 10 , ls='--')
-    ax.hlines(0,0,vix * dt, ls='--')
+    ax.hlines(0,0,vix * dt, ls="--")
     ax.add_patch(velocidad)
     ax.add_patch(aceleracion)
     ax.add_patch(desplazamiento)
 
-    ax.set_aspect('equal')
-    ax.spines[['top', 'right']].set_visible(False)
-
+    ax.set_aspect("equal")
+    ax.spines[["top", "right"]].set_visible(False)
+    
 
 
     ax.set(xlim=(0,vix*dt * 1.05),
-            ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05), 
-            xticks=[vix*dt])
-    ax.spines.bottom.set_position(('axes', (viy*dt -grav*dt**2) / (grav*dt**2 + viy*dt)))
-    ax.spines.bottom.set_position(('axes', 0))
+           ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05))
+           
+    ax.spines.bottom.set_position(("axes", 0))
 
     # Agregando informacion para estudiante
 
@@ -245,9 +229,9 @@ def trianguloDesplazamiento(vi, angv, tf,
                         (vix*dt,0), 
                         (vix*dt,viy*dt),
                         size=100*vix*dt*0.05, 
-                        ax=ax, text=str(angv)+'°',
-                        textposition='inside',
-                        unit="pixels")    
+                        ax=ax, text=str(angv)+"°", 
+                        textposition="inside", 
+                        unit="pixels")
 
     if mostrarDesplazamientoX: ax.set_xticks([vix*dt])
     else: ax.set_xticks([])
@@ -257,7 +241,8 @@ def trianguloDesplazamiento(vi, angv, tf,
     ###
 
     fig.set_figheight(7)
+    fig.savefig("test.png")
+
     plt.show()
 
-trianguloDesplazamiento(20, 30,2.5)
-trianguloDesplazamiento(25, 30, 3)
+trianguloDesplazamiento(25, 30, 3, True, True, True, True)
