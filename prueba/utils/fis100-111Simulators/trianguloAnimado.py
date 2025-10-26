@@ -36,10 +36,10 @@ def animate(i):
     return line,
 
 anim = animation.FuncAnimation(fig,
-                               animate,
-                               init_func=init,
-                               frames=120,
-                               interval=50,
-                               repeat=True)
+                                animate,
+                                init_func=init,
+                                frames=120,
+                                interval=50,
+                                repeat=True)
 
 plt.show()
