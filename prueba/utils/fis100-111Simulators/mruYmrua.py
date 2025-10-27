@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.patches import Rectangle
 from matplotlib.patches import Polygon
+import random
 
 import numpy as np
 
@@ -64,9 +65,9 @@ def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unid
     if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing, n)
     graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing, n)
     graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
-    if genEstrob: estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, n)
+    if genEstrob: estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, testing, n)
 
-def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", n=""):
+def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
     ax.spines.top.set(visible=False)
     ax.spines.left.set(visible=False)
@@ -114,7 +115,9 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", n=""):
     ax.set(xlim=(velocidadesMapeadas[0], sum + velocidadesMapeadas[-1]),
            ylim=(-0.1, 0.5))
     fig.set_figheight(3)
-    fig.savefig("estroboscopico{0}.png".format(n))
+    fig.set_figwidth(10)
+    if not testing: fig.savefig("estroboscopico{0}.png".format(n))
+    else: plt.show()
 
 def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -132,8 +135,8 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", u
         ax.set_yticks(posiciones)
     ax.plot(tiempos, posiciones)
 
-    fig.savefig("mruaDT{0}.png".format(n))
-    if testing: plt.show()
+    if not testing: fig.savefig("mruaDT{0}.png".format(n))
+    else: plt.show()
 
 def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -170,8 +173,8 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT
         ax.set_yticks(velocidades)
     ax.plot(tiempos, velocidades, color="xkcd:cobalt blue")
     
-    fig.savefig("mruaVT{0}.png".format(n))
-    if testing: plt.show()
+    if not testing: fig.savefig("mruaVT{0}.png".format(n))
+    else: plt.show()
 
 def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     i = 0
@@ -202,8 +205,55 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     if mostrarDatos:
         ax.set_xticks(cambiosPosicion(cambiosAceleracion)["tiempos"])
         ax.set_yticks(list(cambiosAceleracion.values()))
-    fig.savefig("mruaAT{0}.png".format(n))
-    if testing: plt.show()
+    if not testing: fig.savefig("mruaAT{0}.png".format(n))
+    else: plt.show()
+
+def generarParametros(unidadD="", unidadT=""):
+    intervalos = {}
+    random.seed()
+    nIntervalos = random.randint(1, 4)
+    
+    if random.randint(1, 5) == 1: tiempos = [random.randint(0, 15)]
+    else: tiempos= [0]
+
+    aceleraciones = [random.randint(-1,3) - 0.5 * random.randint(0,1)]
+
+    i = 1
+    while i <= nIntervalos:
+        tiempos.append(tiempos[i-1] + random.randint(1, 6))
+        aceleraciones.append(random.randint(0,3) - 0.5 * random.randint(0,1))
+        while aceleraciones[i] == aceleraciones[i-1]: 
+            if aceleraciones[i-1] == 0: aceleraciones[i] = random.randint(-1,3) - 0.5 * random.randint(0,1)
+            else: aceleraciones[i] = 0
+        i += 1
+
+    i = 1
+    while i <= nIntervalos:
+        intervalos["{0}-{1}".format(tiempos[i-1], tiempos[i])] = aceleraciones[i-1]
+        i += 1
+    
+    if random.randint(0,3) == 1: xi = random.randint(0,15)
+    else: xi = 0
+
+    if random.randint(0,5) == 1: vi = random.randint(0,7)
+    else: vi = 0
+    
+    if unidadD == "": unidadD = {0: "cm", 1: "m", 2: "km"}[random.randint(0,2)]
+    if unidadT == "": unidadT = {0: "s", 1: "min", 2: "h"}[random.randint(0,2)]
+
+    generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=False)
+    generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=False, mostrarDatos=True, n="Solucion")
+
+    return {"intervalos": intervalos, "xi": xi, "vi": vi, "unidadD": unidadD, "unidadT": unidadT}
+
+"""test1 = generarParametros()
+
+for parametro in test1:
+    print(parametro + ":")
+    print(test1[parametro])
+
+"""
+
 
 testing1 = {"0-5": 1, "5-7": 0, "7-10": 2}
 testing2 = {"0-10": 0}
