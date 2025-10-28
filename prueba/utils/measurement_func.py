@@ -1,4 +1,4 @@
-from measurement.measures import Distance, Mass, Speed, Time
+from pmeasurement.measures import Distance, Mass, Speed, Time
 import random 
 
 ## Funciones basicas de conversion que reciben la unidad de origen, unidad de destino y el valor a convertir
