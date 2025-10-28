@@ -16,7 +16,7 @@ class EjercicioTiempoDistancia(models.Model):
     tipo_id = models.IntegerField(unique=True)
     enunciado_plantilla = models.TextField()
     desarrollo_plantilla = models.TextField(
-        help_text="Para desarrollos simples con .format(). Para los complejos, dejar un placeholder."
+        help_text="si el desarrollo es simple con .format, si se usa una un funcion simplemente deja un placeholder"
     )
     
     # ¡ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ EXACTAMENTE ASÍ!
@@ -30,3 +30,14 @@ class EjercicioTiempoDistancia(models.Model):
 
     def __str__(self):
         return self.enunciado_plantilla[:50] + "..."
+    
+class Ejercicios_vectores(models.Model):
+    tipo_id = models.IntegerField(unique=True)
+    enunciado_plantilla = models.TextField()
+    desarrollo_plantilla = models.TextField(
+        help_text="si el desarrollo es simple con .format, si se usa una un funcion simplemente deja un placeholder"
+    )
+    imagen = models.ImageField(upload_to='img/', null=True, blank=True)
+    
+    def __str__(self):
+        return self.enunciado_plantilla[:100] + "..."

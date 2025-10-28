@@ -1,10 +1,47 @@
 {% extends 'prueba/base.html' %}
 {% load static %}
 {% block titulo %} Vectores {% endblock %}
-{% block  css %} <!-- <link rel="stylesheet" href="{% static 'prueba/css/index_style.css' %}">--> {%endblock%}
+{% block  css %} <link rel="stylesheet" href="{% static 'prueba/css/fis100/Vectores_style.css' %}"> {%endblock%}
 
 {% block contenido  %}
-
+<img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
 <h1>Vectores</h1>
+
+<p class="enunciado"> {{ejercicio.enunciado}}</p>
+
+<div >
+    <img class="img" src="data:image/png;base64,{{ ejercicio.grafico_base64 }}" alt="Gráfico de Suma de Vectores" width="600" height="600">
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="respuesta">Respuesta :</label>
+    <input type="text" name="respuesta" required placeholder="ejemplo:(a,b)">
+    <button type="submit">Comprobar</button>
+</form>
+
+{% if mensaje %}
+    <p>{{ mensaje }}</p>
+{% endif %}
+{% if mostrar_pista %}
+    <p><strong>Pista:</strong> Usa la fórmula: {{ ejercicio.formula }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name='ver_solucion' value="1">Ver solución completa</button>
+    </form>
+{% endif %}
+{% if mostrar_solucion %}
+<div class="solucion">
+    <h5>Desarrollo</h5>
+    <pre>{{ejercicio.desarrollo}}</pre>
+</div>
+
+{% endif %}
+
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="otro" value="1" > otro ejercicio </button>
+</form>
 
 {% endblock %}

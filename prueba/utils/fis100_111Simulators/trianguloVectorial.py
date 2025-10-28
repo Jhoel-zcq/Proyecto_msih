@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.text import Annotation
 
+import io
+import base64
+
 import math
 
 #funcion AngleAnnotation de la página de ejemplos
@@ -32,10 +35,10 @@ class AngleAnnotation(Arc):
 
             * "pixels": pixels
             * "points": points, use points instead of pixels to not have a
-              dependence on the DPI
+            dependence on the DPI
             * "axes width", "axes height": relative units of Axes width, height
             * "axes min", "axes max": minimum or maximum of relative Axes
-              width, height
+            width, height
 
         ax : `matplotlib.axes.Axes`
             The Axes to add the angle annotation to.
@@ -70,9 +73,9 @@ class AngleAnnotation(Arc):
         self.ax.add_patch(self)
 
         self.kw = dict(ha="center", va="center",
-                       xycoords=IdentityTransform(),
-                       xytext=(0, 0), textcoords="offset points",
-                       annotation_clip=True)
+                        xycoords=IdentityTransform(),
+                        xytext=(0, 0), textcoords="offset points",
+                        annotation_clip=True)
         self.kw.update(text_kw or {})
         self.text = ax.annotate(text, xy=self._center, **self.kw)
 
@@ -83,8 +86,8 @@ class AngleAnnotation(Arc):
         elif self.unit[:4] == "axes":
             b = TransformedBbox(Bbox.unit(), self.ax.transAxes)
             dic = {"max": max(b.width, b.height),
-                   "min": min(b.width, b.height),
-                   "width": b.width, "height": b.height}
+                    "min": min(b.width, b.height),
+                    "width": b.width, "height": b.height}
             factor = dic[self.unit[5:]]
         return self.size * factor
 
@@ -132,7 +135,7 @@ class AngleAnnotation(Arc):
         r = s / 2
         if self.textposition == "inside":
             r = s / np.interp(angle_span, [60, 90, 135, 180],
-                                          [3.3, 3.5, 3.8, 4])
+                                        [3.3, 3.5, 3.8, 4])
         self.text.xy = c + r * np.array([np.cos(angle), np.sin(angle)])
         if self.textposition == "outside":
             def R90(a, r, w, h):
@@ -147,7 +150,7 @@ class AngleAnnotation(Arc):
 
             def R(a, r, w, h):
                 aa = (a % (np.pi/4))*((a % (np.pi/2)) <= np.pi/4) + \
-                     (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
+                        (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
                 return R90(aa, r, *[w, h][::int(np.sign(np.cos(2*a)))])
 
             bbox = self.text.get_window_extent()
@@ -197,8 +200,8 @@ def trianguloDesplazamiento(vi, angv, tf,
 
     desplazamiento = FancyArrowPatch((0, 0),
                                      (vix*dt, viy * dt - grav*dt**2),
-                                     color="xkcd:steel grey",
-                                     mutation_scale=20)
+                                    color="xkcd:steel grey",
+                                    mutation_scale=20)
     ax.annotate(r"$\vec{D}$",
                 (vix*dt/2,(viy * dt - grav*dt**2)/2),
                 xytext=(-25,-15), 
@@ -219,7 +222,7 @@ def trianguloDesplazamiento(vi, angv, tf,
 
     ax.set(xlim=(0,vix*dt * 1.05),
            ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05))
-           
+        
     ax.spines.bottom.set_position(("axes", 0))
 
     # Agregando informacion para estudiante
@@ -243,6 +246,102 @@ def trianguloDesplazamiento(vi, angv, tf,
     fig.set_figheight(7)
     fig.savefig("test.png")
 
-    plt.show()
 
 trianguloDesplazamiento(25, 30, 3, True, True, True, True)
+
+
+
+
+#grafica de suma, resta, etc de vectores
+def generar_grafico_vectores(vector_a, vector_b):
+    #esto generara un grafico de a + b = r, en vectores en formato base64
+    
+    A = np.array(vector_a)
+    B = np.array(vector_b)
+    R= A + B 
+    
+    origen = np.array([0,0])
+    
+    plt.figure(figsize=(10,10))
+    ax = plt.gca()
+    #vector a, color azul
+    ax.quiver(*origen, *A, angles='xy', scale_units='xy', scale=1, color='blue', label=f'A = {A}')
+    #vector b, color rojo
+    ax.quiver(*A, *B, angles='xy', scale_units='xy', scale=1, color='red', label=f'B = {B}')
+    #vector r, color verde
+    ax.quiver(*origen, *R, angles='xy', scale_units='xy', scale=1, color='green', label=f'R = {R}')
+    
+    max_val = np.max(np.abs(np.concatenate((A, B, R)))) 
+    ax.set_xlim([-max_val, max_val])
+    ax.set_ylim([-max_val, max_val])
+    ax.set_xlabel("Eje X")
+    ax.set_ylabel("Eje Y")
+    ax.set_title("Suma de Vectores: A + B = R")
+    ax.grid(True)
+    ax.set_aspect('equal')
+    ax.legend()
+    
+    buf = io.BytesIO()
+    
+    plt.savefig(buf, format='png')
+    
+    plt.close()
+    
+    imagen_bytes = buf.getvalue()
+    
+    imagen_base64 = base64.b64encode(imagen_bytes).decode('utf-8')
+    
+    return imagen_base64
+
+def generar_grafico_vectores_iniciales(vector_a, vector_b):
+    """
+    Genera un gráfico con los vectores A y B partiendo del origen (0,0)
+    y lo devuelve como una imagen en base64. NO muestra la suma.
+    """
+    
+    # 1. Definir los vectores y el origen
+    A = np.array(vector_a)
+    B = np.array(vector_b)
+    origen = np.array([0, 0])
+    
+    # 2. Configurar el gráfico
+    plt.figure(figsize=(10, 10)) # Puedes ajustar el tamaño si quieres
+    ax = plt.gca()
+    
+    # 3. Dibujar SOLO los vectores A y B desde el origen
+    # Vector A (azul)
+    ax.quiver(*origen, *A, angles='xy', scale_units='xy', scale=1, color='blue', label=f'A = {A}')
+    # Vector B (rojo)
+    ax.quiver(*origen, *B, angles='xy', scale_units='xy', scale=1, color='red', label=f'B = {B}')
+    
+    # 4. Configurar los límites y la cuadrícula (ajusta según los valores posibles)
+    # Encuentra el valor absoluto máximo en X o Y para ajustar los límites
+    max_val_a = np.max(np.abs(A))
+    max_val_b = np.max(np.abs(B))
+    lim_max = max(max_val_a, max_val_b) + 2 # Añade un margen
+    lim_min = -lim_max # Hazlo simétrico si quieres
+    
+    ax.set_xlim([lim_min, lim_max])
+    ax.set_ylim([lim_min, lim_max])
+    ax.set_xlabel("Eje X")
+    ax.set_ylabel("Eje Y")
+    ax.set_title("Vectores A y B")
+    ax.grid(True)
+    ax.set_aspect('equal') # Mantiene la proporción correcta
+    ax.legend() # Muestra las etiquetas A y B
+    
+    # Añadir líneas de ejes
+    ax.axhline(0, color='black',linewidth=0.5)
+    ax.axvline(0, color='black',linewidth=0.5)
+    
+    # 5. Guardar la imagen en memoria (igual que antes)
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close() # Importante cerrar la figura
+    
+    # 6. Codificar a Base64 (igual que antes)
+    imagen_bytes = buf.getvalue()
+    imagen_base64 = base64.b64encode(imagen_bytes).decode('utf-8')
+    
+    # Devuelve el texto de la imagen
+    return imagen_base64

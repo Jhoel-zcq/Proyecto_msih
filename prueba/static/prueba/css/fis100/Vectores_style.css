@@ -1,0 +1,18 @@
+.img {
+    display: block; /* Para que ocupe su propia línea */
+    margin-top: 5px; /* Reduce el espacio arriba */
+    margin-bottom: 15px; /* Reduce el espacio abajo */
+    margin-left: auto; /* Centra la imagen */
+    margin-right: auto; /* Centra la imagen */
+    max-width: 70%; /* Controla el tamaño máximo */
+    height: auto;
+}
+
+.enunciado {
+    margin-bottom: 5px; /* Menos espacio debajo del enunciado */
+}
+
+/* Ajusta márgenes del formulario si es necesario */
+form {
+    margin-top: 10px;
+}
