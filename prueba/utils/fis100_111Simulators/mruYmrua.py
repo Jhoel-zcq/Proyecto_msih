@@ -208,7 +208,7 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     if not testing: fig.savefig("mruaAT{0}.png".format(n))
     else: plt.show()
 
-def generarParametros(unidadD="", unidadT=""):
+def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=False):
     intervalos = {}
     random.seed()
     nIntervalos = random.randint(1, 4)
@@ -241,27 +241,47 @@ def generarParametros(unidadD="", unidadT=""):
     if unidadD == "": unidadD = {0: "cm", 1: "m", 2: "km"}[random.randint(0,2)]
     if unidadT == "": unidadT = {0: "s", 1: "min", 2: "h"}[random.randint(0,2)]
 
-    generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=False)
-    generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=False, mostrarDatos=True, n="Solucion")
+    if testing:
+        generarGraficosMRUA(intervalos, xi, vi, mostrarDatos, unidadD, unidadT, testing=True)
+        generarGraficosMRUA(intervalos, xi, vi, mostrarDatos, unidadD, unidadT, testing=True, n="Solucion")
 
     return {"intervalos": intervalos, "xi": xi, "vi": vi, "unidadD": unidadD, "unidadT": unidadT}
 
-"""test1 = generarParametros()
+def ejercicioTipo1MRUA():
+    """
+    Modo de uso: Para este tipo de ejercicio se genera 1 estroboscópico <mruaEj1Estrob.png>,
+    para este estroboscopico se generan 3 alternativas de gráficas de aceleracion-tiempo
+    <mruaEj1AT1>, <muraEj1AT2>, <muraEj1AT3>, una de estas gráficas corresponde a la del
+    estroboscopico mostrado, las demás son incorrectas.
+    Luego de escoger el gráfico de aceleración correcto se presentará la misma dimámica ahora
+    para gráficos de velocidad-tiempo. <mruaEj1VT1.png>, <mruaEj1VT2.png>, <mruaEj1VT3.png>
+    El correcto para ambas es siempre el primero, por lo que el orden de las imagenes debe
+    ser alterado aleatoriamente al momento de mostrarlas, NO al momento de generarlas.
+    """
 
-for parametro in test1:
-    print(parametro + ":")
-    print(test1[parametro])
+    i = 1
+    casos = []
+    while i <= 3:
+        casos.append(generarParametros())
+
+
+
+
 
 """
-
-
 testing1 = {"0-5": 1, "5-7": 0, "7-10": 2}
 testing2 = {"0-10": 0}
 testing3 = {"0-5": 1, "5-10": 0}
 
 tests = [testing1, testing2, testing3]
 
+for parametro in test1:
+    print(parametro + ":")
+    print(test1[parametro])
+
+
 i  = 0
 while i < len(tests):
     generarGraficosMRUA(tests[i], n=str(i))
     i += 1
+"""
