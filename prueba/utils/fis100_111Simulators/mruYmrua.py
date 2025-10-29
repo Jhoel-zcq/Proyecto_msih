@@ -176,7 +176,7 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT
     if not testing: fig.savefig("mruaVT{0}.png".format(n))
     else: plt.show()
 
-def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
+def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n="", title=False):
     i = 0
     fig, ax = plt.subplots()
     ax.set_ylabel(r"aceleración: a [{0}/${1}^2$]".format(unidadD, unidadT))
@@ -208,7 +208,7 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     if not testing: fig.savefig("mruaAT{0}.png".format(n))
     else: plt.show()
 
-def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=False):
+def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=False, title=True):
     intervalos = {}
     random.seed()
     nIntervalos = random.randint(1, 4)
