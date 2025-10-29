@@ -54,7 +54,7 @@ def cambiosVelocidad(cambiosAceleracion, vi=0):
 
     return {"tiempos": tiempos, "velocidades": velocidades}
 
-def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
+def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n="", title=False):
     #estroboscopico(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT)
     mrua = False
     genEstrob = True
@@ -67,12 +67,14 @@ def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unid
     graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
     if genEstrob: estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, testing, n)
 
-def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=False, n=""):
+def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=False, n="", title=False):
     fig, ax = plt.subplots()
     ax.spines.top.set(visible=False)
     ax.spines.left.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.set_yticks([])
+
+    if title: ax.set_title("Gráfico estroboscópico " + n)
 
     tiempos = cambiosPosicion(cambiosAceleracion)["tiempos"]
     aceleracones = cambiosAceleracion.values()
@@ -119,13 +121,15 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=
     if not testing: fig.savefig("estroboscopico{0}.png".format(n))
     else: plt.show()
 
-def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
+def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n="", title=False):
     fig, ax = plt.subplots()
     ax.set_ylabel(f"posición: x [{unidadD}]")
     ax.set_xlabel(f"tiempo: t [{unidadT}]")
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
+
+    if title: ax.set_title("Gráfico Distancia-Tiempo " + n)
 
     tiempos = cambiosPosicion(cambiosAceleracion, vi, xi)["tiempos"]
     posiciones = cambiosPosicion(cambiosAceleracion, vi, xi)["posiciones"]
@@ -138,13 +142,15 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", u
     if not testing: fig.savefig("mruaDT{0}.png".format(n))
     else: plt.show()
 
-def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
+def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n="", title=False):
     fig, ax = plt.subplots()
     ax.set_ylabel(f"velocidad: v [{unidadD}/{unidadT}]")
     ax.set_xlabel(f"tiempo: t [{unidadT}]")
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
+
+    if title: ax.set_title("Gráfico Velocidad-Tiempo " + n)
 
     tiempos = cambiosVelocidad(cambiosAceleracion, vi)["tiempos"]
     velocidades = cambiosVelocidad(cambiosAceleracion, vi)["velocidades"]
@@ -185,6 +191,8 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
 
+    if title: ax.set_title("Gráfico Aceleración-Tiempo " + n)
+
     for intervalo in cambiosAceleracion:
         if cambiosAceleracion[intervalo] != 0: i += 1
         ti = float(intervalo.split("-")[0])
@@ -208,7 +216,7 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     if not testing: fig.savefig("mruaAT{0}.png".format(n))
     else: plt.show()
 
-def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=False, title=True):
+def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=False, soloAccPositiva=False):
     intervalos = {}
     random.seed()
     nIntervalos = random.randint(1, 4)
@@ -257,15 +265,55 @@ def ejercicioTipo1MRUA():
     para gráficos de velocidad-tiempo. <mruaEj1VT1.png>, <mruaEj1VT2.png>, <mruaEj1VT3.png>
     El correcto para ambas es siempre el primero, por lo que el orden de las imagenes debe
     ser alterado aleatoriamente al momento de mostrarlas, NO al momento de generarlas.
+    
+    Una manera detectar cuál es el archivo correcto (esto sería útil al momento de programar
+    la respuesta correcta) es verificar si el último carácter del nombre del archivo luego de
+    hacer split por "." es "o".
+
+    Me refiero a hacer esto:
+    ej:
+    s1 = "mruaAT0.png"
+    s2 = "mruaATCorrecto.png"
+
+    if s1.split(".")[0][-1] == "o"   ----->   FALSE
+    if s2.split(".")[0][-1] == "o"   ----->   TRUE
+
     """
 
-    i = 1
-    casos = []
-    while i <= 3:
-        casos.append(generarParametros())
+    correcto = generarParametros()
 
+    generarGraficosMRUA(correcto["intervalos"], 
+                        correcto["xi"], 
+                        correcto["vi"], 
+                        True, 
+                        correcto["unidadD"], 
+                        correcto["unidadT"], 
+                        False, 
+                        "Correcto")
+    """
+    Se genera los 3 gráficos del caso correcto: estroboscopicoCorrecto.png, graficaATCorrecto.png,
+    graficaVTCorrecto.png
+    """
 
+    incorrectos = []
 
+    i = 0
+    while i < 4:
+        incorrectos.append(generarParametros())
+        if i % 2 == 0: graficaAT(incorrectos[i]["intervalos"],
+                                 True,
+                                 correcto["unidadD"], 
+                                 correcto["unidadT"], 
+                                 False, 
+                                 i)
+        else: graficaVT(incorrectos[i]["intervalos"],
+                        incorrectos[i]["vi"],
+                        True,
+                        correcto["unidadD"], 
+                        correcto["unidadT"], 
+                        False, 
+                        i)
+        i += 1
 
 
 """
@@ -285,3 +333,4 @@ while i < len(tests):
     generarGraficosMRUA(tests[i], n=str(i))
     i += 1
 """
+ejercicioTipo1MRUA()
