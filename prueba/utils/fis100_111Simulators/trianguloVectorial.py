@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.text import Annotation
@@ -245,9 +248,10 @@ def trianguloDesplazamiento(vi, angv, tf,
 
     fig.set_figheight(7)
     fig.savefig("test.png")
+    #plt.show()
 
 
-trianguloDesplazamiento(25, 30, 3, True, True, True, True)
+trianguloDesplazamiento(25, 60, 3, True, True, True, True)
 
 
 

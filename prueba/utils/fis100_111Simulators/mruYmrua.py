@@ -1,10 +1,23 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.patches import Rectangle
 from matplotlib.patches import Polygon
 import random
 
+import io , base64
+
 import numpy as np
+#funcion que convierte una figura de matplotlib a base64
+def fig_to_base64(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', bbox_inches='tight')
+    plt.close(fig)
+    imagen_bytes = buf.getvalue()
+    return base64.b64encode(imagen_bytes).decode('utf-8')
+
 
 def cambiosPosicion(cambiosAceleracion, vi= 0, xi=0):
     i = 0
@@ -62,10 +75,19 @@ def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unid
         if cambiosAceleracion[intervalo] != 0: mrua = True
         if cambiosAceleracion[intervalo] < 0: genEstrob = False
 
-    if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing, n)
-    graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing, n)
-    graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
     if genEstrob: estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, testing, n)
+    graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
+    graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing, n)
+    if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing, n)
+    
+    graficos = {}
+    
+    graficos["aceleracion_tiempo"] = graficaAT(cambiosAceleracion, unidadD=unidadD, unidadT=unidadT)
+    graficos["velocidad_tiempo"] = graficaVT(cambiosAceleracion, vi, unidadD=unidadD, unidadT=unidadT)
+    graficos["distancia_tiempo"] = graficaDT(cambiosAceleracion, xi, vi, unidadD=unidadD, unidadT=unidadT)
+    graficos["estroboscopico"] = estroboscopico(cambiosAceleracion)
+
+    return graficos
 
 def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -73,6 +95,7 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=
     ax.spines.left.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.set_yticks([])
+    ax.set_title("Gráfica Estroboscópico " + n)
 
     tiempos = cambiosPosicion(cambiosAceleracion)["tiempos"]
     aceleracones = cambiosAceleracion.values()
@@ -103,21 +126,21 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", testing=
     while j < len(velocidadesMapeadas):
         sum +=velocidadesMapeadas[j-1]
         ax.add_patch(FancyArrowPatch((sum, 0.05), 
-                                     (sum + velocidadesMapeadas[j], 0.05), 
-                                     color="xkcd:cobalt blue",
-                                     mutation_scale=10))
+                                    (sum + velocidadesMapeadas[j], 0.05), 
+                                    color="xkcd:cobalt blue",
+                                    mutation_scale=10))
         ax.add_patch(FancyArrowPatch((sum, 0.1),
-                                     (sum + aceleracionesMapeadas[j]*tiemposMapeados[1], 0.1),
-                                     color="xkcd:scarlet",
-                                     mutation_scale=10))
+                                    (sum + aceleracionesMapeadas[j]*tiemposMapeados[1], 0.1),
+                                    color="xkcd:scarlet",
+                                    mutation_scale=10))
         j += 1
 
     ax.set(xlim=(velocidadesMapeadas[0], sum + velocidadesMapeadas[-1]),
-           ylim=(-0.1, 0.5))
+        ylim=(-0.1, 0.5))
     fig.set_figheight(3)
     fig.set_figwidth(10)
-    if not testing: fig.savefig("estroboscopico{0}.png".format(n))
-    else: plt.show()
+    
+    return fig_to_base64(fig)
 
 def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -126,6 +149,7 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", u
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
+    ax.set_title("Gráfica Distancia-Tiempo " + n)
 
     tiempos = cambiosPosicion(cambiosAceleracion, vi, xi)["tiempos"]
     posiciones = cambiosPosicion(cambiosAceleracion, vi, xi)["posiciones"]
@@ -134,9 +158,8 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", u
         ax.set_xticks(tiempos)
         ax.set_yticks(posiciones)
     ax.plot(tiempos, posiciones)
-
-    if not testing: fig.savefig("mruaDT{0}.png".format(n))
-    else: plt.show()
+    
+    return fig_to_base64(fig)
 
 def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -145,10 +168,9 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
-
+    ax.set_title("Gráfica Velocidad-Tiempo " + n)
     tiempos = cambiosVelocidad(cambiosAceleracion, vi)["tiempos"]
     velocidades = cambiosVelocidad(cambiosAceleracion, vi)["velocidades"]
-
     i = 1
     while i < len(tiempos) and mostrarDatos:
         if not (velocidades[i-1] == 0 and velocidades[i] == 0):
@@ -160,10 +182,10 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT
                         horizontalalignment="center",
                         verticalalignment="bottom")
             ax.add_patch(Polygon(((tiempos[i-1], velocidades[i-1]),
-                                 (tiempos[i-1], 0),
-                                 (tiempos[i], 0),
-                                 (tiempos[i], velocidades[i])), 
-                                 color="whitesmoke"))
+                                (tiempos[i-1], 0),
+                                (tiempos[i], 0),
+                                (tiempos[i], velocidades[i])), 
+                                color="whitesmoke"))
             ax.vlines(tiempos[i-1], 0, velocidades[i-1], colors="gainsboro", ls="--")
             ax.vlines(tiempos[i], 0, velocidades[i], colors="gainsboro", ls="--")
         i+=1
@@ -173,8 +195,8 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT
         ax.set_yticks(velocidades)
     ax.plot(tiempos, velocidades, color="xkcd:cobalt blue")
     
-    if not testing: fig.savefig("mruaVT{0}.png".format(n))
-    else: plt.show()
+    return fig_to_base64(fig)
+
 
 def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     i = 0
@@ -184,6 +206,7 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
+    ax.set_title("Gráfica Aceleración-Tiempo " + n)
 
     for intervalo in cambiosAceleracion:
         if cambiosAceleracion[intervalo] != 0: i += 1
@@ -205,10 +228,10 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     if mostrarDatos:
         ax.set_xticks(cambiosPosicion(cambiosAceleracion)["tiempos"])
         ax.set_yticks(list(cambiosAceleracion.values()))
-    if not testing: fig.savefig("mruaAT{0}.png".format(n))
-    else: plt.show()
+    
+    return fig_to_base64(fig)
 
-def generarParametros(unidadD="", unidadT=""):
+def generarParametros(unidadD="", unidadT="", test=False):
     intervalos = {}
     random.seed()
     nIntervalos = random.randint(1, 4)
@@ -241,8 +264,9 @@ def generarParametros(unidadD="", unidadT=""):
     if unidadD == "": unidadD = {0: "cm", 1: "m", 2: "km"}[random.randint(0,2)]
     if unidadT == "": unidadT = {0: "s", 1: "min", 2: "h"}[random.randint(0,2)]
 
-    generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=False)
-    generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=False, mostrarDatos=True, n="Solucion")
+    if test:
+        generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=True)
+        generarGraficosMRUA(intervalos, xi=xi, vi=vi, unidadD=unidadD, unidadT=unidadT, testing=True, mostrarDatos=True, n="Solución")
 
     return {"intervalos": intervalos, "xi": xi, "vi": vi, "unidadD": unidadD, "unidadT": unidadT}
 
@@ -253,8 +277,8 @@ for parametro in test1:
     print(test1[parametro])
 
 """
-
-
+generarParametros(test=True)
+"""
 testing1 = {"0-5": 1, "5-7": 0, "7-10": 2}
 testing2 = {"0-10": 0}
 testing3 = {"0-5": 1, "5-10": 0}
@@ -263,5 +287,8 @@ tests = [testing1, testing2, testing3]
 
 i  = 0
 while i < len(tests):
-    generarGraficosMRUA(tests[i], n=str(i))
+    generarGraficosMRUA(tests[i],testing=True, n=str(i), mostrarDatos=True)
     i += 1
+"""
+
+

@@ -7,12 +7,13 @@ import random
 from random import choice
 import json
 # Importaciones de modelos y formularios
-from .models import Post, EjercicioTiempoDistancia , Ejercicios_vectores
+from .models import Post, EjercicioTiempoDistancia , Ejercicios_vectores, Ejercicios_movimiento
 from .forms import PostForm
 
 # Importaciones de tus funciones de utilidades
 from .utils.fis100.ejercicios_tiempo_y_distancia import desarrollo_id_3
 from .utils.fis100_111Simulators.trianguloVectorial import generar_grafico_vectores , generar_grafico_vectores_iniciales
+from .utils.fis100_111Simulators.mruYmrua import generarGraficosMRUA , generarParametros
 # BLOQUE 2: VISTAS PRINCIPALES DE LA PÁGINA
 def index(request):
     return render(request, 'prueba/index.html')
@@ -134,12 +135,13 @@ def Vectores(request):
         plantilla_ejercicio = choice(Ejercicios_vectores.objects.all())
         
         if plantilla_ejercicio.tipo_id == 1 :
-            ax =random.choice([-10,10,-9,9,-8,8,-7,7,-6,6,-5,5,-4,4,-3,3,-2,2,-1,1,0])
-            ay =random.choice([-1,-3,-5,-7,-9,-10,-2,-4,-6,-8,10,8,6,4,2,1,3,5,7,9,0])
-            bx =random.choice([1,3,5,7,9,10,0,-1,-3,-5,-7,-8,-10,2,4,6,8,-2,-4,-6,-8])
-            by =random.choice([10,8,6,4,2,1,0,3,5,7,9,-1,-3,-5,-7,-10,-9,-8,-6,-4,-2])
-            n1 = random.choice([-1,-3,-5,1,3,5,-2,-4,4,2])
-            n2 = random.choice([-5,-3,-1,5,3,1,-2,2,-4,4])
+            variables = json.loads(plantilla_ejercicio.variables_json)
+            ax =random.choice(variables['ax'])
+            ay =random.choice(variables['ay'])
+            bx =random.choice(variables['bx'])
+            by =random.choice(variables['by'])
+            n1 = random.choice(variables['n1'])
+            n2 = random.choice(variables['n2'])
             an1x = ax * n1
             an1y = ay * n1 
             bn2x = bx * n2
@@ -226,7 +228,58 @@ def Triangulo_vectorial(request):
     return render(request,"prueba/fis100/Triangulo_vectorial.html")
 
 def Descripción_de_movimiento(request):
-    return render(request,"prueba/fis100/Descripción_de_movimiento.html" )
+    if request.method == 'POST' and request.POST.get('otro'):#como siempre, esta es una medida para el bucle 
+        if 'ejercicio_movimiento' in request.session:
+            del request.session['ejercicio_movimiento']
+        return redirect('Descripción_de_movimiento')
+    
+    #ahora creamos un ejercicio si no hay alguno en la sesion
+    if 'ejercicio_movimiento' not in request.session:
+        plantilla_ejercicio = choice(Ejercicios_movimiento.objects.all())
+        
+        #ahora vamos con la logica para cada ejercicio, por ejemplo, el de id = 1
+        if plantilla_ejercicio.tipo_id==1:
+            #queda pendiente 
+            """variables = json.loads(plantilla_ejercicio.variables_json)
+            velocidad_1 = choice(variables['velocidad_1'])
+            velocidad_2 = choice(variables['velocidad_2'])
+            distancia_1 = choice(variables['distancia_1'])
+            distancia_2 = choice(variables['distancia_2'])
+            formula = ""
+            enunciado = plantilla_ejercicio.enunciado_plantilla.format(velocidad_1=velocidad_1, distancia_1= distancia_1, velocidad_2 = velocidad_2, distancia_2= distancia_2)
+            pregunta = plantilla_ejercicio.pregunta_plantilla
+            desarrollo_id_1 = plantilla_ejercicio.desarrollo_pregunta
+            enunciado_final = enunciado + pregunta"""
+            
+            enunciado_dt = "Segun el siguiente grafico estroboscopico, escoja correctamente su respectivo grafico de distancia vs tiempo"
+            enunciado_vt = ""
+            parametros = generarParametros(test=False)
+            Graficos_correctos= generarGraficosMRUA(
+                parametros["intervalos"],
+                xi = parametros["xi"],
+                vi = parametros["vi"],
+                unidadD = parametros["unidadD"],
+                unidadT = parametros["unidadT"]
+            )
+        
+        ejercicio_final = {
+            'enunciado' : enunciado_dt,
+            'enunciado_vt':enunciado_vt,
+            'graficos_correctos' : Graficos_correctos,
+        }
+        request.session['ejercicio_movimiento'] = ejercicio_final
+        request.session['intentos'] = 0
+    
+    contexto = request.session.get('ejercicio_movimiento',{})#recuperamos el ejercicio si esta en la sesion
+    
+    mensaje = contexto.get('mensaje',"")#lo mismo, recupera mensaje si hay en el contexto de la sesion
+    mostrar_vt = False
+    mostrar_at = False
+    
+    
+    contexto['mensaje'] = mensaje
+    
+    return render(request,"prueba/fis100/Descripción_de_movimiento.html",contexto)
 
 def Fuerzas_y_leyes_de_Newton(request):
     return render(request,"prueba/fis100/Fuerzas_y_leyes_de_Newton.html")
@@ -265,3 +318,7 @@ def crear_post(request):
     else:
         form = PostForm()
     return render(request, 'prueba/crear_post.html', {'form': form})
+
+
+#python.exe manage.py runserver 
+
