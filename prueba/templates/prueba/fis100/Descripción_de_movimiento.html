@@ -7,26 +7,42 @@
 <img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
 <h1>Descripción de movimiento</h1>
 
-<p class="enunciado">{{ enunciado }}</p>
+{% if mensaje  %}
+    <p><strong>{{ mensaje }}</strong></p>
+{% endif %}
 
-<div>
-    <img class="img_estroboscopico" src="data:image/png;base64,{{graficos_correctos.estroboscopico}}" alt="grafico estroboscopico">
-</div>
-<p>grafico de distancia vs tiempo</p>
-<div>
-    <img class="img_dis_t" src="data:image/png;base64, {{graficos_correctos.distancia_tiempo}}">
-</div>
-<p>grafico de velocidad vs tiempo</p>
-<div>
-    <img class="img_vel_t" src="data:image/png;base64, {{graficos_correctos.velocidad_tiempo}}">
-</div>
-<p>grafico de aceleracion vs tiempo</p>
-<div>
-    <img class="img_ace_t" src="data:image/png;base64,{{graficos_correctos.aceleracion_tiempo}}" >
-</div>
+<p>Dado el siguiente grafico estroboscopico:</p>
 
+<img src="data:image/png;base64,{{grafico_estroboscopico}}" alt="grafico estroboscopico">
+
+<hr>
 <form method="post">
     {% csrf_token %}
-    <button type="submit" name="otro" value="1" > otro ejercicio </button>
+    <h3>{{ enunciado_vt }}</h3>
+    {% for opcion in opciones_vt %}
+    <label>
+        <input type="radio" name="respuesta_vt" value="{{opcion}}">
+        <img src="data:image/png;base64,{{opcion}}" alt="opcion vt" style="width: 300px;">
+    </label>
+    <br>
+    {% endfor %}
+    <hr>
+    {% if vt_correcta %}
+    <h3>{{ enunciado_at }}</h3>
+    {% for opcion in opciones_at %}
+    <label>
+        <input type="radio" name="respuesta_at" value="{{opcion}}">
+        <img src="data:image/png;base64,{{opcion}}" alt="opcion at" style="width: 300px;">
+    </label>
+    <br>
+    {% endfor %}
+    {% endif %}
+    <button type="submit">Comprobar</button>
+</form>
+<hr>
+
+<form  method="post">
+    {% csrf_token %}
+    <button type="submit" name="otro" value="1" >Otro ejercicio</button>
 </form>
 {% endblock %}

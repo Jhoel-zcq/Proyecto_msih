@@ -74,18 +74,23 @@ def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=[], unidadD
         if cambiosAceleracion[intervalo] != 0: mrua = True
         if cambiosAceleracion[intervalo] < 0: genEstrob = False
 
-    if genEstrob: estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, testing, n)
-    graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
-    graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing, n)
-    if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing, n)
+
     
     graficos = {}
     
-    graficos["aceleracion_tiempo"] = graficaAT(cambiosAceleracion, unidadD=unidadD, unidadT=unidadT)
-    graficos["velocidad_tiempo"] = graficaVT(cambiosAceleracion, vi, unidadD=unidadD, unidadT=unidadT)
-    graficos["distancia_tiempo"] = graficaDT(cambiosAceleracion, xi, vi, unidadD=unidadD, unidadT=unidadT)
-    graficos["estroboscopico"] = estroboscopico(cambiosAceleracion)
+    graficos["aceleracion_tiempo"] = graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
+    graficos["velocidad_tiempo"] = graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing, n)
+    
+    if not mrua:
+        graficos["distancia_tiempo"] = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing, n)
+    else:
+        graficos["distancia_tiempo"] = None #caso contrario un string vacio
 
+    if genEstrob:
+        graficos["estroboscopico"] = estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, testing, n)
+    else:
+        graficos["estroboscopico"] = None # string vacío
+    
     return graficos
 
 def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=False, n=""):
@@ -129,7 +134,7 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=Fal
                                     color="xkcd:cobalt blue",
                                     mutation_scale=10))
         ax.add_patch(FancyArrowPatch((sum, 0.1),
-                                    (sum + aceleracionesMapeadas[j]*tiemposMapeados[1], 0.1),
+                                    (sum + aceleracionesMapeadas[j]*tiemposMapeados[j], 0.1),#antes era tiemposMapeados[1], lo cambie pues me daba un pequeño error 
                                     color="xkcd:scarlet",
                                     mutation_scale=10))
         j += 1
@@ -240,7 +245,8 @@ def graficaAT(cambiosAceleracion, mostrarDatos=[], unidadD="m", unidadT="s", tes
     return fig_to_base64(fig)
 
 def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=[], soloAccPositiva=False):
-
+#cambios para que sea positiva 
+    val_aceleracion = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
     intervalos = {}
     random.seed()
     nIntervalos = random.randint(1, 4)
@@ -248,15 +254,19 @@ def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=[], so
     if random.randint(1, 5) == 1: tiempos = [random.randint(0, 15)]
     else: tiempos= [0]
 
-    aceleraciones = [random.randint(-1,3) - 0.5 * random.randint(0,1)]
+    aceleraciones = [random.choice(val_aceleracion)]#
 
     i = 1
     while i <= nIntervalos:
         tiempos.append(tiempos[i-1] + random.randint(1, 6))
-        aceleraciones.append(random.randint(0,3) - 0.5 * random.randint(0,1))
+        aceleraciones.append(random.choice(val_aceleracion))#
         while aceleraciones[i] == aceleraciones[i-1]: 
-            if aceleraciones[i-1] == 0: aceleraciones[i] = random.randint(-1,3) - 0.5 * random.randint(0,1)
-            else: aceleraciones[i] = 0
+            if aceleraciones[i-1] == 0:
+                aceleraciones[i] = random.choice(val_aceleracion)
+                while aceleraciones[i] == 0:
+                    aceleraciones[i] = random.choice(val_aceleracion)
+            else:
+                aceleraciones[i] = 0
         i += 1
 
     i = 1
@@ -299,16 +309,16 @@ def ejercicioTipo1MRUA():
     ej:
     s1 = "mruaAT0.png"
     s2 = "mruaATCorrecto.png"
-
-
+    
+    
     if s1.split(".")[0][-1] == "o"   ----->   FALSE
     if s2.split(".")[0][-1] == "o"   ----->   TRUE
 
     """
-
+#cambios para pasarlo a base64
     correcto = generarParametros()
-
-    generarGraficosMRUA(correcto["intervalos"], 
+#1.guardamos en una variable los graficos correctos
+    graficas_correctas = generarGraficosMRUA(correcto["intervalos"], 
                         correcto["xi"], 
                         correcto["vi"],
                         [], 
@@ -322,22 +332,40 @@ def ejercicioTipo1MRUA():
     """
 
     incorrectos = []
-
+#2. añadimos 2 listas para guardar las graficas en base64
+    alternativas_at_b64 = []
+    alternativas_vt_b64 = []
     i = 0
     while i < 4:
         incorrectos.append(generarParametros())
-        if i % 2 == 0: graficaAT(incorrectos[i]["intervalos"],
+        if i % 2 == 0: 
+            #guardamos elstring
+            img_at_base64=graficaAT(incorrectos[i]["intervalos"],
                                 ["todo"],
                                 correcto["unidadD"], 
                                 correcto["unidadT"], 
                                 i)
-        else: graficaVT(incorrectos[i]["intervalos"],
+            #añadimos el string a las alternativas 
+            alternativas_at_b64.append(img_at_base64)
+        else:
+            #guardamos el string
+            img_vt_b64=graficaVT(incorrectos[i]["intervalos"],
                         incorrectos[i]["vi"],
                         ["todo"],
                         correcto["unidadD"], 
                         correcto["unidadT"],  
                         i)
+            #lo añadimos a las alternativas
+            alternativas_vt_b64.append(img_vt_b64)
         i += 1
+    #retornamos todo en un diccionario 
+    return {
+        "estroboscopico": graficas_correctas["estroboscopico"],
+        "correcta_at": graficas_correctas["aceleracion_tiempo"],
+        "correcta_vt": graficas_correctas["velocidad_tiempo"],
+        "alternativas_at": alternativas_at_b64,
+        "alternativas_vt": alternativas_vt_b64
+    }
 
 def ejercicioTipo2MRUA():
     """
@@ -378,5 +406,4 @@ tests = [testing1, testing2, testing3]
 
 #generarGraficosMRUA(testing1, mostrarDatos=True)
 
-ejercicioTipo2Variedad1MRUA()
-
+#

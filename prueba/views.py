@@ -1,6 +1,7 @@
 # mish/prueba/views.py
 
 # BLOQUE 1: IMPORTACIONES 
+from django.views.decorators.cache import never_cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import random
@@ -11,9 +12,9 @@ from .models import Post, EjercicioTiempoDistancia , Ejercicios_vectores, Ejerci
 from .forms import PostForm
 
 # Importaciones de tus funciones de utilidades
-from .utils.fis100.ejercicios_tiempo_y_distancia import desarrollo_id_3
+from .utils.fis100.ejercicios_tiempo_y_distancia import desarrollo_id_3 , verific
 from .utils.fis100_111Simulators.trianguloVectorial import generar_grafico_vectores , generar_grafico_vectores_iniciales
-from .utils.fis100_111Simulators.mruYmrua import generarGraficosMRUA , generarParametros
+from .utils.fis100_111Simulators.mruYmrua import generarGraficosMRUA , generarParametros , ejercicioTipo1MRUA
 # BLOQUE 2: VISTAS PRINCIPALES DE LA PÁGINA
 def index(request):
     return render(request, 'prueba/index.html')
@@ -66,11 +67,15 @@ def Tiempo_y_distancia(request):
             persona2 = choice(variables['persona2'])
             periodo1 = choice(variables['periodo1'])
             periodo2 = choice(variables['periodo2'])
-            valor_correcto = round((periodo1 * periodo2) / abs(periodo2 - periodo1), 2)
+            verificar = verific(periodo1, periodo2)
+            periodo_1= verificar['periodo1']
+            periodo_2 = verificar['periodo2']
+            
+            valor_correcto = round((periodo_1 * periodo_2) / abs(periodo_2 - periodo_1), 2)
             enunciado_final = plantilla_ejercicio.enunciado_plantilla.format(
-                persona1=persona1, persona2=persona2, periodo1=periodo1, periodo2=periodo2
+                persona1=persona1, persona2=persona2, periodo1=periodo_1, periodo2=periodo_2
             )
-            desarrollo_dict = desarrollo_id_3(periodo1, periodo2, persona1, persona2)
+            desarrollo_dict = desarrollo_id_3(periodo_1, periodo_2, persona1, persona2)
             desarrollo_final = desarrollo_dict.get("desarrollo", "Error al generar desarrollo.")#el .get es por si falla el desarrollo, si eso sucede se muestra "error al generar el desarrollo"
 
         # Guardamos el ejercicio completo en la sesión
@@ -169,8 +174,8 @@ def Vectores(request):
             'grafico_base64' : graficobase64,
             'formula' : formula,
             'desarrollo' : desarrollo,
-            'vector_a' : vector_a,
-            'vector_b' :vector_b,
+            'vector_a' : vector_an1,
+            'vector_b' :vector_bn2,
         }
         request.session['ejercicio_vector'] = ejercicio_final
         request.session['intentos'] = 0
@@ -188,7 +193,7 @@ def Vectores(request):
             mostrar_solucion = True
         elif request.POST.get('respuesta'):
             try:
-                respuesta_usuario = str(request.POST.get('respuesta'))
+                respuesta_usuario = str(request.POST.get('respuesta')).replace(' ','')
                 if respuesta_usuario == contexto.get('respuesta_correcta'):
                     mensaje= "CORRECTO!"
                     mostrar_solucion = True
@@ -227,12 +232,35 @@ def Vectores(request):
 def Triangulo_vectorial(request):
     return render(request,"prueba/fis100/Triangulo_vectorial.html")
 
+@never_cache
 def Descripción_de_movimiento(request):
     if request.method == 'POST' and request.POST.get('otro'):#como siempre, esta es una medida para el bucle 
         if 'ejercicio_movimiento' in request.session:
             del request.session['ejercicio_movimiento']
+        if 'vt_correcta' in request.session:
+            del request.session['vt_correcta']
+        request.session.modified = True
         return redirect('Descripción_de_movimiento')
-    
+    #comprobacion de la resspuesta usuario
+    if request.method == 'POST':
+        ejercicio = request.session.get('ejercicio_movimiento')#recupermos el ejercicio
+        respuesta_usuario_vt = request.POST.get('respuesta_vt')#comprobamos si el usuario envio una respuesta_vt
+        if request.session['vt_correcta']:
+            respuesta_usuario_at = request.POST.get('respuesta_at')
+            if respuesta_usuario_at == ejercicio['correcta_at']:
+                request.session['mensaje'] = "¡correcto!!!!!"
+            else:
+                request.session['mensaje'] = "respuesta de aceleración vs tiempo es incorrecto, intentelo de nuevo"
+            return redirect('Descripción_de_movimiento')
+        if respuesta_usuario_vt and ejercicio:
+            if respuesta_usuario_vt == ejercicio['correcta_vt']:#comparamos la respuesta
+                request.session['vt_correcta'] = True #guardamos el progreso del usuario
+                request.session['mensaje'] = "¡CORRECTO!, ahora ¿cúal es la grafica correcta de aceleración vs tiempo?"
+            else:
+                request.session['mensaje'] = "respuesta de velocidad vs tiempo incorrecta, intentalo de nuevo"
+        
+        request.session.modified = True#forzamos a la sessionlo guarde redirigimos con el retur
+        return redirect('Descripción_de_movimiento')
     #ahora creamos un ejercicio si no hay alguno en la sesion
     if 'ejercicio_movimiento' not in request.session:
         plantilla_ejercicio = choice(Ejercicios_movimiento.objects.all())
@@ -251,33 +279,34 @@ def Descripción_de_movimiento(request):
             desarrollo_id_1 = plantilla_ejercicio.desarrollo_pregunta
             enunciado_final = enunciado + pregunta"""
             
-            enunciado_dt = "Segun el siguiente grafico estroboscopico, escoja correctamente su respectivo grafico de distancia vs tiempo"
-            enunciado_vt = ""
-            parametros = generarParametros(test=False)
-            Graficos_correctos= generarGraficosMRUA(
-                parametros["intervalos"],
-                xi = parametros["xi"],
-                vi = parametros["vi"],
-                unidadD = parametros["unidadD"],
-                unidadT = parametros["unidadT"]
-            )
+            enunciado_vt = "Segun el siguiente grafico estroboscopico, escoja correctamente su respectivo grafico de velocidad vs tiempo"
+            enunciado_at = "Segun el siguiente grafico estroboscopico, escoja correctamente su respectivo grafico de aceleración vs tiempo"
+            graficas = ejercicioTipo1MRUA()#esta variable "graficas", contiene todas las graficas 
+            opciones_at = [graficas["correcta_at"]] + graficas["alternativas_at"]#guardamos en una lista las graficas 
+            random.shuffle(opciones_at)#ramdomizamos las opciones
+            opciones_vt = [graficas["correcta_vt"]] + graficas["alternativas_vt"]
+            random.shuffle(opciones_vt)
         
         ejercicio_final = {
-            'enunciado' : enunciado_dt,
-            'enunciado_vt':enunciado_vt,
-            'graficos_correctos' : Graficos_correctos,
+            'enunciado_vt' : enunciado_vt,
+            'enunciado_at':enunciado_at,
+            'grafico_estroboscopico' : graficas["estroboscopico"],
+            'opciones_vt' : opciones_vt,
+            'opciones_at' : opciones_at,
+            'correcta_vt' : graficas["correcta_vt"],
+            'correcta_at' : graficas["correcta_at"]
         }
         request.session['ejercicio_movimiento'] = ejercicio_final
         request.session['intentos'] = 0
+        request.session['vt_correcta'] = False
+        request.session['mensaje'] = ""
     
     contexto = request.session.get('ejercicio_movimiento',{})#recuperamos el ejercicio si esta en la sesion
     
-    mensaje = contexto.get('mensaje',"")#lo mismo, recupera mensaje si hay en el contexto de la sesion
-    mostrar_vt = False
-    mostrar_at = False
+    contexto['mensaje'] = request.session.get('mensaje',"")#lo mismo, recupera mensaje si hay en el contexto de la sesion
     
     
-    contexto['mensaje'] = mensaje
+    contexto['vt_correcta'] = request.session.get('vt_correcta', False)
     
     return render(request,"prueba/fis100/Descripción_de_movimiento.html",contexto)
 
@@ -293,7 +322,6 @@ def Principios_de_Newton(request):
 
 def Trabajo_y_energia(request):
     return render(request, "prueba/fis111/Trabajo_y_energia.html")
-
 
 # BLOQUE 4: FUNCIONES ALEATORIAS 
 def pagina_aleatoria_fis100(request):
