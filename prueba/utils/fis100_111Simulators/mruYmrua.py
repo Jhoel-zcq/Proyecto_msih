@@ -99,7 +99,7 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=Fal
     ax.spines.left.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.set_yticks([])
-    ax.set_title("Gráfica Estroboscópico " + n)
+    ax.set_title("Gráfico Estroboscópico " + n)
 
     if "titulo" in mostrarDatos: ax.set_title("Gráfico estroboscópico " + n)
 
@@ -134,7 +134,7 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=Fal
                                     color="xkcd:cobalt blue",
                                     mutation_scale=10))
         ax.add_patch(FancyArrowPatch((sum, 0.1),
-                                    (sum + aceleracionesMapeadas[j]*tiemposMapeados[j], 0.1),#antes era tiemposMapeados[1], lo cambie pues me daba un pequeño error 
+                                    (sum + aceleracionesMapeadas[j], 0.1),#antes era tiemposMapeados[1], lo cambie pues me daba un pequeño error 
                                     color="xkcd:scarlet",
                                     mutation_scale=10))
         j += 1
@@ -144,7 +144,8 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=Fal
     fig.set_figheight(3)
     fig.set_figwidth(10)
     
-    return fig_to_base64(fig)
+    if not testing: return fig_to_base64(fig)
+    fig.savefig("estroboscopico{0}.png".format(n))
 
 def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=[], unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -165,7 +166,8 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=[], unidadD="m", unid
     if "todo" in mostrarDatos or "ejes" in mostrarDatos or "y" in mostrarDatos or "posicion" in mostrarDatos: ax.set_yticks(posiciones)
     ax.plot(tiempos, posiciones)
     
-    return fig_to_base64(fig)
+    if not testing: return fig_to_base64(fig)
+    plt.show()
 
 def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=[], unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
@@ -204,7 +206,8 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=[], unidadD="m", unidadT="s
     if "todo" in mostrarDatos or "ejes" in mostrarDatos or "y" in mostrarDatos or "velocidad" in mostrarDatos: ax.set_yticks(velocidades)
     ax.plot(tiempos, velocidades, color="xkcd:cobalt blue")
     
-    return fig_to_base64(fig)
+    if not testing: return fig_to_base64(fig)
+    fig.savefig("graficaVT{0}.png".format(n))
 
 
 def graficaAT(cambiosAceleracion, mostrarDatos=[], unidadD="m", unidadT="s", testing=False, n=""):
@@ -224,7 +227,7 @@ def graficaAT(cambiosAceleracion, mostrarDatos=[], unidadD="m", unidadT="s", tes
         ti = float(intervalo.split("-")[0])
         tf = float(intervalo.split("-")[1])
         ax.hlines(cambiosAceleracion[intervalo], ti, tf, color="xkcd:scarlet")
-        if "todo" in mostrarDatos or "area" in mostrarDatos and cambiosAceleracion[intervalo] != 0:
+        if ("todo" in mostrarDatos or "area" in mostrarDatos) and cambiosAceleracion[intervalo] != 0:
             ax.annotate(r"$\Delta v_{0}$".format(i), 
                         xy=(0,0), 
                         xycoords="data", 
@@ -240,13 +243,13 @@ def graficaAT(cambiosAceleracion, mostrarDatos=[], unidadD="m", unidadT="s", tes
     if "todo" in mostrarDatos or "ejes" in mostrarDatos or "x" in mostrarDatos: ax.set_xticks(cambiosPosicion(cambiosAceleracion)["tiempos"])
     if "todo" in mostrarDatos or "ejes" in mostrarDatos or "y" in mostrarDatos or "aceleracion" in mostrarDatos: ax.set_yticks(list(cambiosAceleracion.values()))
 
-    """if not testing: fig.savefig("mruaAT{0}.png".format(n))
-    else: plt.show()"""
-    return fig_to_base64(fig)
+    if not testing: return fig_to_base64(fig)
+    fig.savefig("graficaAT{0}.png".format(n))
+    
 
-def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=[], soloAccPositiva=False):
-#cambios para que sea positiva 
-    val_aceleracion = [0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
+def generarParametros(unidadD="m", unidadT="s", testing=False, mostrarDatos=[], soloAccPositiva=False):
+    #cambios para que sea positiva 
+    val_aceleracion = [0,0,0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
     intervalos = {}
     random.seed()
     nIntervalos = random.randint(1, 4)
@@ -254,7 +257,7 @@ def generarParametros(unidadD="", unidadT="", testing=False, mostrarDatos=[], so
     if random.randint(1, 5) == 1: tiempos = [random.randint(0, 15)]
     else: tiempos= [0]
 
-    aceleraciones = [random.choice(val_aceleracion)]#
+    aceleraciones = [random.choice(val_aceleracion)]
 
     i = 1
     while i <= nIntervalos:
@@ -315,13 +318,13 @@ def ejercicioTipo1MRUA():
     if s2.split(".")[0][-1] == "o"   ----->   TRUE
 
     """
-#cambios para pasarlo a base64
+    #cambios para pasarlo a base64
     correcto = generarParametros()
-#1.guardamos en una variable los graficos correctos
+    #1.guardamos en una variable los graficos correctos
     graficas_correctas = generarGraficosMRUA(correcto["intervalos"], 
-                        correcto["xi"], 
-                        correcto["vi"],
-                        [], 
+                        0, #correcto["xi"], 
+                        0, #correcto["vi"],
+                        ["todo"], 
                         correcto["unidadD"], 
                         correcto["unidadT"], 
                         False, 
@@ -332,14 +335,14 @@ def ejercicioTipo1MRUA():
     """
 
     incorrectos = []
-#2. añadimos 2 listas para guardar las graficas en base64
+    #2. añadimos 2 listas para guardar las graficas en base64
     alternativas_at_b64 = []
     alternativas_vt_b64 = []
     i = 0
     while i < 4:
         incorrectos.append(generarParametros())
         if i % 2 == 0: 
-            #guardamos elstring
+            #guardamos el string
             img_at_base64=graficaAT(incorrectos[i]["intervalos"],
                                 ["todo"],
                                 correcto["unidadD"], 
@@ -350,7 +353,7 @@ def ejercicioTipo1MRUA():
         else:
             #guardamos el string
             img_vt_b64=graficaVT(incorrectos[i]["intervalos"],
-                        incorrectos[i]["vi"],
+                        0, #incorrectos[i]["vi"],
                         ["todo"],
                         correcto["unidadD"], 
                         correcto["unidadT"],  
@@ -383,27 +386,36 @@ def ejercicioTipo2Variedad1MRUA():
     caso = {"intervalos": {"0-5": 1, "5-10": 0}, "unidadD":"m", "unidadT": "s"}
 
     graficaAT(caso["intervalos"],
-            ["titulo"],
-            caso["unidadD"],
-            caso["unidadT"],
-            testing=True)
+              ["todo"],
+              caso["unidadD"],
+              caso["unidadT"],
+              testing=True)
 
-    tiempos = cambiosVelocidad(caso)["tiempos"]
-    velocidades = cambiosVelocidad(caso)["velocidades"]
+    graficaVT(caso["intervalos"],
+              0,
+              ["x"],
+              caso["unidadD"],
+              caso["unidadT"],
+              testing=True)
     
-    aceleracion = caso["intervalos"].values()
-    print(aceleracion)
+    tiempos = cambiosVelocidad(caso["intervalos"])["tiempos"]
+    velocidades = cambiosVelocidad(caso["intervalos"])["velocidades"]
+    
+
+
+    aceleraciones = caso["intervalos"].values()
+    print(tiempos)
+    print(velocidades)
+    print(aceleraciones)
 
     return "test"
 
-
+#ejercicioTipo2Variedad1MRUA()
 testing1 = {"0-5": 1, "5-7": 0, "7-10": 2}
 testing2 = {"0-10": 0}
 testing3 = {"0-5": 1, "5-10": 0}
 
 tests = [testing1, testing2, testing3]
 
-
+estroboscopico(generarParametros()["intervalos"],testing=True)
 #generarGraficosMRUA(testing1, mostrarDatos=True)
-
-#
