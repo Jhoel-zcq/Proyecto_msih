@@ -135,6 +135,7 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=Fal
                                     mutation_scale=10))
         ax.add_patch(FancyArrowPatch((sum, 0.1),
                                     (sum + aceleracionesMapeadas[j], 0.1),#antes era tiemposMapeados[1], lo cambie pues me daba un pequeño error 
+
                                     color="xkcd:scarlet",
                                     mutation_scale=10))
         j += 1
@@ -328,7 +329,7 @@ def ejercicioTipo1MRUA():
                         correcto["unidadD"], 
                         correcto["unidadT"], 
                         False, 
-                        "Correcto")
+                        "")
     """
     Se genera los 3 gráficos del caso correcto: estroboscopicoCorrecto.png, graficaATCorrecto.png,
     graficaVTCorrecto.png
@@ -347,7 +348,8 @@ def ejercicioTipo1MRUA():
                                 ["todo"],
                                 correcto["unidadD"], 
                                 correcto["unidadT"], 
-                                i)
+                                testing=False,#como no generaba la grafica, lo midifique asi ;-;
+                                n="")#tmb
             #añadimos el string a las alternativas 
             alternativas_at_b64.append(img_at_base64)
         else:
@@ -357,7 +359,8 @@ def ejercicioTipo1MRUA():
                         ["todo"],
                         correcto["unidadD"], 
                         correcto["unidadT"],  
-                        i)
+                        testing=False,#probando si se arregla el error
+                        n="")#tmb
             #lo añadimos a las alternativas
             alternativas_vt_b64.append(img_vt_b64)
         i += 1

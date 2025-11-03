@@ -1,13 +1,13 @@
 <!-- mish/prueba/templates/prueba/fis100/tiempo_y_distancia.html -->
-{% extends 'prueba/base.html' %}
-{% load static %}
-{% block titulo %} Tiempo y distancia {% endblock %}
+{% extends 'prueba/base.html' %}<!-- esto le dice al naegador que use base.html que lo use como pantalla principal,  -->
+{% load static %}<!--esto habilita la etiqueta static, la que tenemos para cargar imagenes, css, etc-->
+{% block titulo %} Tiempo y distancia {% endblock %}<!-- los block son muy importantes, peus son "huecos" de base.html, que lo rellenamos -->
 {% block  css %} <link rel="stylesheet" href="{% static 'prueba/css/fis100/Tiempo_y_distancia_style.css' %}"> {%endblock%}
 
 {% block contenido  %}
 <img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
 <h1 class="title">Tiempo y distancia</h1>
-{% if ejercicio_imagen %}
+{% if ejercicio_imagen %}<!-- condicionales como en python, a pesar que la variable ejercicio_imagen, no lo definimos como booleano(true o False), lo toman como True si esque si teine una imagen-->
     <div class="text-center my-3">
         <img src="{{ ejercicio.imagen }}" alt="Imagen del ejercicio" width="400" height="200">
     </div>

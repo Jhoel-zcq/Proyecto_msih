@@ -18,6 +18,16 @@
 <hr>
 <form method="post">
     {% csrf_token %}
+    <h3>{{ enunciado_at }}</h3>
+    {% for opcion in opciones_at %}
+    <label>
+        <input type="radio" name="respuesta_at" value="{{opcion}}">
+        <img src="data:image/png;base64,{{opcion}}" alt="opcion at" style="width: 300px;">
+    </label>
+    <br>
+    {% endfor %}
+    <hr>
+    {% if at_correcta %}
     <h3>{{ enunciado_vt }}</h3>
     {% for opcion in opciones_vt %}
     <label>
@@ -27,15 +37,6 @@
     <br>
     {% endfor %}
     <hr>
-    {% if vt_correcta %}
-    <h3>{{ enunciado_at }}</h3>
-    {% for opcion in opciones_at %}
-    <label>
-        <input type="radio" name="respuesta_at" value="{{opcion}}">
-        <img src="data:image/png;base64,{{opcion}}" alt="opcion at" style="width: 300px;">
-    </label>
-    <br>
-    {% endfor %}
     {% endif %}
     <button type="submit">Comprobar</button>
 </form>

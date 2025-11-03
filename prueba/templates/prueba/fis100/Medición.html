@@ -4,7 +4,74 @@
 {% block  css %} <!-- <link rel="stylesheet" href="{% static 'prueba/css/index_style.css' %}">--> {%endblock%}
 
 {% block contenido  %}
+<img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
+<h1 class="title">Medicion</h1>
 
-<h1>Medicion</h1>
+<p>{{ejercicio.enunciado}}</p>
 
+<pre>{{ejercicio.tabla}}</pre>
+<h4>{{ejercicio.pregunta_a}}</h4>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="respuesta" >Tu respuesta: </label>
+    <input type="text" name="respuesta_usuario_a" required placeholder="expresea tu respuesta con a lo mas 2 c.s.">
+    <button type="submit" >Comprobar</button>
+</form>
+
+{% if mensaje %}
+<p>{{mensaje}}</p>
+{% endif %}
+
+{% if mostrar_pista_a %}
+<p><strong>Pista:</strong> {{ejercicio.pista_a}}</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="ver_solucion_a" value="1" >Ver solucion completa</button>
+</form>
+{% endif %}
+
+{% if mostrar_solucion_a %}
+<div>
+    <h5>Desarrollo:</h5>
+    <pre>{{ejercicio.desarrollo_a}}</pre>
+    <p><strong>Resultado final:</strong>{{ejercicio.promedio}}</p>
+</div>
+{% endif %}
+{% if correcta_a %}
+
+<h4>{{ejercicio.pregunta_b}}</h4>
+<form method="post">
+    {% csrf_token %}
+    <label for="respuesta">Tu respuesta: </label>
+    <input type="text" name="respuesta_usuario_b" required placeholder="expresea tu respuesta con a lo mas 2 c.s.">
+    <button type="submit" >Comprobar</button>
+</form>
+
+{% if mensaje_b %}
+<p>{{mensaje_b}}</p>
+{% endif %}
+
+{% if mostrar_pista_b %}
+<p><strong>Pista:</strong>{{ejercicio.pista_b}}</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="ver_solucion_b" value="1">Ver solucion completa</button>
+</form>
+{% endif %}
+
+{% if mostrar_solucion_b %}
+<div>
+    <h5>Desarrollo:</h5>
+    <pre>{{ejercicio.desarrollo_b}}</pre>
+    <p><strong>Resultado final :</strong> {{ejercicio.desviacion_estandar}}</p>
+</div>
+{% endif %}
+
+{% endif  %}
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="otro" value="1">Otro ejercicio</button>
+</form>
 {% endblock %}

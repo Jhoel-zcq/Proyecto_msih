@@ -30,7 +30,21 @@ class EjercicioTiempoDistancia(models.Model):
 
     def __str__(self):
         return self.enunciado_plantilla[:50] + "..."
-    
+
+class EjercicioMedicion(models.Model):
+    tipo_id= models.IntegerField(unique=True)
+    enunciado_plantilla = models.TextField()
+    desarrollo_plantilla = models.TextField(
+        help_text="si el desarrollo es simple con .format, si se usa una un funcion simplemente deja un placeholder"
+    )
+    variables_json = models.JSONField(
+        help_text='Un JSON con claves para cada variable y listas de sus posibles valores.',
+        null=True,
+        blank=True
+    )
+    def __str__(self):
+        return self.enunciado_plantilla[:100]+"..."
+
 class Ejercicios_vectores(models.Model):
     tipo_id = models.IntegerField(unique=True)
     enunciado_plantilla = models.TextField()
