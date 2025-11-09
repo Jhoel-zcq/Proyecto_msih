@@ -389,17 +389,17 @@ def ejercicioTipo2Variedad1MRUA():
     caso = {"intervalos": {"0-5": 1, "5-10": 0}, "unidadD":"m", "unidadT": "s"}
 
     graficaAT(caso["intervalos"],
-              ["todo"],
-              caso["unidadD"],
-              caso["unidadT"],
-              testing=True)
+            ["todo"],
+            caso["unidadD"],
+            caso["unidadT"],
+            testing=True)
 
     graficaVT(caso["intervalos"],
-              0,
-              ["x"],
-              caso["unidadD"],
-              caso["unidadT"],
-              testing=True)
+            0,
+            ["x"],
+            caso["unidadD"],
+            caso["unidadT"],
+            testing=True)
     
     tiempos = cambiosVelocidad(caso["intervalos"])["tiempos"]
     velocidades = cambiosVelocidad(caso["intervalos"])["velocidades"]

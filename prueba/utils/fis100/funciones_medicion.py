@@ -75,6 +75,19 @@ def valores_medicion_1(num_palitos):
         
     desarrollo_promedio +=f")/{num_palitos} = {promedio}"
     
+    desarrollo_desviacion = "|Longitud en [cm] (li) | Frecuencia (Ni) |  Ni * li[cm] | (li - xi)[cm] | Ni*(li-xi)**2 [cm**2]|\n"
+    x= 0
+    while x < numero_de_frecuencia:
+        longitud = valores_l_palito[x]
+        frecuencia = valores_frecuencia[x]
+        li_fre = round((longitud * frecuencia),2)
+        dif = diferencia[x]
+        dif_fre_2 = fre_dif_2[x]
+        desarrollo_desviacion += f"|    {longitud:<4.2f}              |     {frecuencia:4d}        | {li_fre:<8.3f}     | {dif:8.4f}      | {dif_fre_2:8.4f}             |\n"
+        x += 1
+    
+    desarrollo_desviacion += f"|                      |        𝜇        |       {promedio:<4.2f}   |      Suma     |   {suma_frec_dif_2:<8.4f}           |\n"
+    desarrollo_desviacion += f"|                      |                 |              |       σ       |   {desviacion:<8.4f}           |\n"
     v = -1
     tabla_aux=""
     while v < numero_de_frecuencia:
@@ -95,7 +108,7 @@ def valores_medicion_1(num_palitos):
         'frec_dif_2' : fre_dif_2,
         'suma_frec_dif_2' : suma_frec_dif_2,
         'desviacion_estandar' :  desviacion,
-        'desarrollo_desviacion' : "",
+        'desarrollo_desviacion' : desarrollo_desviacion,
         'tabla_aux' : tabla_aux,
     }
     return datos

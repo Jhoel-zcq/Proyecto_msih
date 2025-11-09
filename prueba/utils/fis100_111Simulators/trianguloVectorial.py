@@ -1,4 +1,5 @@
 import matplotlib
+import random
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
@@ -251,7 +252,7 @@ def trianguloDesplazamiento(vi, angv, tf,
     #plt.show()
 
 
-trianguloDesplazamiento(25, 60, 3, True, True, True, True)
+trianguloDesplazamiento(25, random.randint(10,75), 3, True, True, True, True)
 
 
 

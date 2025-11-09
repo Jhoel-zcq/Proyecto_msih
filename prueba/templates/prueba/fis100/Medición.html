@@ -53,7 +53,9 @@
 {% endif %}
 
 {% if mostrar_pista_b %}
-<p><strong>Pista:</strong>{{ejercicio.pista_b}}</p>
+<p><strong>Pista:</strong></p>
+<img src="{% static 'prueba/img/formula_desviacion.png' %}" alt="formula de la desviacion estandar" width="200" height="100">
+<pre>{{ejercicio.pista_b}}</pre>
 <form method="post">
     {% csrf_token %}
     <button type="submit" name="ver_solucion_b" value="1">Ver solucion completa</button>

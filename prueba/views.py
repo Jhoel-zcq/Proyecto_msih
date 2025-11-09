@@ -148,8 +148,8 @@ def Medición(request):
             pista_a = "El periodo se calcula como la sumatoria, de cada uno de tus datos de la longitud por la frecuenccia correspondiente, y divides por el total de palitos"
             desarrollo_a = ejercicio['desarrollo_promedio']
             pregunta_b = "Calcula la desviación estándar de las mediciones, el procedimiento utilizado debe quedar claro en tu desarrollo"
-            pista_b = "pista b"
-            desarrollo_b="desarrollo b en desarrollo"
+            pista_b = "Donde:\n σ : Desviación estándar \n N: Numero total de datos \n Xi: Cada valor del conjunto de datos \n 𝜇: Promedio de los datos"
+            desarrollo_b=ejercicio['desarrollo_desviacion']
             tabla_val = ejercicio['tabla_aux']
             promedio = ejercicio['promedio']
             desviacion_estandar = ejercicio['desviacion_estandar']

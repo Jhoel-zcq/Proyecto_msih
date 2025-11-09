@@ -6,20 +6,26 @@ def desarrollo_id_3(periodo1,periodo2,persona1,persona2):
     num1= float(periodo1)
     num2=float(periodo2)
     tiempo= round((num1*num2)/(abs(num1-num2)),2)
-    r = { "desarrollo" : f"""A partir del enunciado se tiene que {persona1} tiene un periodo de {periodo1}[s], y tambien que {persona2} tiene un periodo de {periodo2}[s]\n
-    luego se hara una tabla con los instantes que cada persona que encuentra en la izquierda y derecha\n
+    r = { "desarrollo" : f"""A partir del enunciado se tiene que {persona1} tiene un periodo de {periodo1}[s], y tambien que {persona2} tiene un periodo de {periodo2}[s]\n luego se hara una tabla con los instantes que cada persona que encuentra en la izquierda y derecha\n
     """}
     #parte de desarrollo de la persona1
-    value = 1
+    value = 2
     valor =0
     while True:
-        if value // 2 == 0 :
+        if value % 2 == 0 :
             lado = "izquierda"
         else:
             lado = "derecha"
+        
         if valor == 0:
             r["desarrollo"] += f"Para {persona1}, tenemos los siguientes datos:\n"
-        r["desarrollo"] += f"En {round(valor,1)}[s] esta en {lado}\n"
+            r["desarrollo"] += f"|  t[s]  |   lado    |\n"
+            r["desarrollo"] += f"| {round(valor,1):<6.2f} | {lado} |\n"
+        else:
+            if lado == "derecha":
+                r["desarrollo"] += f"| {round(valor,1):<6.2f} | {lado}   |\n"
+            elif lado == "izquierda":
+                r["desarrollo"] += f"| {round(valor,1):<6.2f} | {lado} |\n"
         
         valor += num1/2
         value +=1
@@ -27,17 +33,23 @@ def desarrollo_id_3(periodo1,periodo2,persona1,persona2):
             break
     
     #para persona2
-    value = 1
+    value = 2
     valor = 0 
     while True:
-        if value // 2 == 0 :
+        if value % 2 == 0 :
             lado = "derecha"
         else:
             lado = "izquierda"
+        
         if valor == 0:
             r["desarrollo"]+= f"Ahora para {persona2}, tenemos los siguientes datos:\n"
-        
-        r["desarrollo"]+= f"En {round(valor,1)}[s] esta en {lado}\n"
+            r["desarrollo"] += f"|  t[s]  |   lado    |\n"
+            r["desarrollo"] += f"| {round(valor,1):<6.2f} | {lado}   |\n"
+        else:
+            if lado == "derecha":
+                r["desarrollo"] += f"| {round(valor,1):<6.2f} | {lado}   |\n"
+            elif lado == "izquierda":
+                r["desarrollo"] += f"| {round(valor,1):<6.2f} | {lado} |\n"
         
         valor +=num2/2
         value+=1
