@@ -12,7 +12,7 @@ from .models import Post, EjercicioTiempoDistancia , Ejercicios_vectores, Ejerci
 from .forms import PostForm
 
 # Importaciones de tus funciones de utilidades
-from .utils.fis100.ejercicios_tiempo_y_distancia import desarrollo_id_3 , verific
+from .utils.fis100.ejercicios_tiempo_y_distancia import desarrollo_id_3 , verific , parse_tuple
 from .utils.fis100_111Simulators.trianguloVectorial import generar_grafico_vectores , generar_grafico_vectores_iniciales
 from .utils.fis100_111Simulators.mruYmrua import generarGraficosMRUA , generarParametros , ejercicioTipo1MRUA
 from .utils.fis100.funciones_medicion import valores_medicion_1
@@ -458,5 +458,48 @@ def crear_post(request):
     return render(request, 'prueba/crear_post.html', {'form': form})
 
 
-#python.exe manage.py runserver 
+# vistas de la pagina del sandbox
+def rapidez_de_cambio_sandbox(request):
+    return render(request, "prueba/templates_sandbox/Rapidez_de_cambio_sandbox.html")
 
+def vectores_sandbox(request):
+    grafico_ini = None
+    grafico_final = None
+    mensaje = "Ingresa los vectores para graficar." # Mensaje predeterminado
+    vector_a_input = ""
+    vector_b_input = ""
+    if request.method == 'POST':
+        try:
+            vector_a_input = request.POST.get('vector_a','')
+            vector_b_input = request.POST.get('vector_b','')
+            vector_a = parse_tuple(vector_a_input)
+            vector_b = parse_tuple(vector_b_input)
+            if 'vector_a' in request.POST and 'vector_b' in request.POST:
+                grafico_ini = generar_grafico_vectores_iniciales(vector_a,vector_b)
+                grafico_final= generar_grafico_vectores(vector_a,vector_b)
+                mensaje="Grafico generado exitosamente"
+            else:
+                mensaje = "Por favor, ingrese el valor para ambos vectores"
+        except Exception as x :
+            grafico_ini = None
+            grafico_final= None
+            mensaje = f"ingrese un valor valido"
+    ejercicio_final = {
+        'grafico_ini' : grafico_ini,
+        'grafico_fi' : grafico_final,
+        'mensaje':mensaje,
+        'vector_a_input' : vector_a_input,
+        'vector_b_input' : vector_b_input,
+    }
+    request.session['ejercicio_vector_sandbox'] = ejercicio_final
+    contexto = request.session.get('ejercicio_vector_sandbox',{})
+    return render(request, "prueba/templates_sandbox/Vectores_sandbox.html",{
+        "ejercicio": contexto,
+        "mensaje":contexto['mensaje'],
+    })
+
+def triangulo_vectorial_sandbox(request):
+    return render(request, "prueba/templates_sandbox/triangulo_vectorial_sandbox.html")
+
+def descripcion_de_movimiento_sandbox(request):
+    return render(request,"prueba/templates_sandbox/descripcion_de_movimiento_sandbox.html")

@@ -76,3 +76,17 @@ def verific(periodo1, periodo2):
                 periodo1=random.choice([2, 4, 6, 8, 10,12,14,15,13,11,9,7,5,3,])
                 lista.remove(periodo1)
                 periodo2= random.choice(lista)
+
+
+def parse_tuple(texto):#funcion para pasar un str (a,b) a una lista (a,b)
+    # Quitamos el  paréntesis
+    texto = texto.strip()[1:-1]
+
+    # Separaramos  por la coma
+    a_str, b_str = texto.split(",")
+
+    # Convertimos a números
+    a = float(a_str)
+    b = float(b_str)
+
+    return (a, b)

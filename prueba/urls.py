@@ -27,6 +27,11 @@ urlpatterns = [
     path('Cinematica/', views.Cinematica, name='Cinematica'),
     path('Principios_de_Newton/',views.Principios_de_Newton,name='Principios_de_Newton'),
     path('Trabajo_y_energia/',views.Trabajo_y_energia, name='Trabajo_y_energia'),
+    #templates del sandbox
+    path('Rapidez_de_cambio_sandbox/', views.rapidez_de_cambio_sandbox,name="Rapidez_de_cambio_sandbox" ),
+    path('Vectores_sandbox', views.vectores_sandbox, name="Vectores_sandbox"),
+    path('Triangulo_vectorial_sandbox/', views.triangulo_vectorial_sandbox, name="triangulo_vectorial_sandbox"),
+    path('descripcion_de_movimiento_sandbox', views.descripcion_de_movimiento_sandbox, name="descripcion_de_movimiento_sandbox"),
 ]
 
 # miweb/urls.pys
