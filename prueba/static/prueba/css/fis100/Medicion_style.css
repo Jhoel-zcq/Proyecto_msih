@@ -1,3 +1,179 @@
-.title {
-    color: red;
+body {
+    /* Fondo: color claro o un degradado sutil */
+    background-color: #f8f9fa; /* Gris muy claro (como Bootstrap) */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente clara y moderna */
+    color: #333;
+}
+
+.container {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+
+.logo_header {
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    margin-bottom: 30px;
+}
+
+.logo_header img {
+    /*border: 5px solid #0056b3;  Borde con el color primario */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo_header img:hover {
+    transform: scale(1.25);
+}
+
+.mish {
+    font-size: 50px;
+    color: #cc0000;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.enunciado {
+    font-size: 20px;
+    line-height: 1.6;
+    color: #555;
+    margin-top: 15px;
+}
+
+.table {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #000000;
+    margin-top: 15px;
+}
+
+.pregunta_1 {
+    font-size: 25px;
+    line-height: 1.3;
+    color: #be2e2e;
+    margin-top: 10px;
+}
+
+.label_1 {
+    font-size: 20px;
+    line-height: 1;
+    color: #000000;
+    margin-top: 10px;
+}
+/* Botón Comprobar (submit) */
+.boton_enviar, button[name="ver_solucion_a"] {
+    /* Base */
+    padding: 8px 15px;
+    border-radius: 8px;
+    background-color: #007bff; /* Azul primario */
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.boton_enviar:hover, button[name="ver_solucion_a"]:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.boton_enviar:active, button[name="ver_solucion_a"]:active {
+    background-color: #004085;
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.boton_otro_ejercicio {
+        color: black;
+    margin: 0 0 0 0;
+    background-color: rgb(0, 238, 255);
+    padding: 5px;
+    border: 2px solid black;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    width: 170px;
+    border: 2px solid black;
+    transition: all 0.2s ease-in-out;
+}
+.boton_otro_ejercicio:hover {
+    background-color: #00a0b0; /* Un azul cian más oscuro */
+    border-color: #00a0b0;
+    transform: rotate(5deg) scale(1.05); /* Ligeramente más dramático para el reinicio */
+}
+
+
+/* Botón Comprobar (submit) */
+button[name="ver_solucion_b"] {
+    /* Base */
+    padding: 8px 15px;
+    border-radius: 8px;
+    background-color: #007bff; /* Azul primario */
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+button[name="ver_solucion_b"] :hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button[name="ver_solucion_b"]:active {
+    background-color: #004085;
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mensaje, .mensaje_b { 
+    font-size: 1.5em;
+    font-weight: 700;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out; /* Animación de aparición */
+}
+
+.mensaje.correcto, .mensaje_b.correcto {
+    background-color: #d4edda; /* Fondo verde muy claro */
+    color: #155724; /* Texto verde oscuro */
+    border: 1px solid #c3e6cb;
+    animation: pulseCorrect 1s ease-out 3; /* Pulsa 3 veces al aparecer */
+}
+
+/* Estilo para respuesta INCORRECTA (Clase: incorrecto) */
+.mensaje.incorrecto, .mensaje_b.incorrecto {
+    background-color: #f8d7da; /* Fondo rojo muy claro */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 1px solid #f5c6cb;
+    animation: shake 0.5s; /* Animación de temblor */
+}
+
+/* Definición de Keyframes para las animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseCorrect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
 }

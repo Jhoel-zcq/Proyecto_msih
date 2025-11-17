@@ -1,3 +1,26 @@
 .nav-item.nav-link{
     color: rgb(13, 0, 255);
 }
+
+.navbar {
+    background-color: #fec375 !important; /* Azul oscuro y sólido para la barra */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item.nav-link {
+    color: #ffffff !important; /* Texto blanco para contraste */
+    font-weight: 500;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-item.nav-link:hover {
+    background-color: #ff5c4a; /* Un azul ligeramente más oscuro al pasar el ratón */
+    border-radius: 5px;
+}
+
+/* Estilo para el enlace activo (opcional, si implementas la clase 'active') */
+.nav-item.nav-link.active {
+    font-weight: 700;
+    border-bottom: 3px solid #cc0000; /* Acento rojo para la página actual */
+}

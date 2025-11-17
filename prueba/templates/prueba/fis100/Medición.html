@@ -4,23 +4,25 @@
 {% block  css %} <link rel="stylesheet" href="{% static 'prueba/css/fis100/Medicion_style.css' %}"> {%endblock%}
 
 {% block contenido  %}
-<img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
-<h1 class="title">Medicion</h1>
+<div class="logo_header">
+    <img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
+    <div class="mish">Medicion</div>
+</div>
 
-<p>{{ejercicio.enunciado}}</p>
+<p class="enunciado">{{ejercicio.enunciado}}</p>
 
-<pre>{{ejercicio.tabla}}</pre>
-<h4>{{ejercicio.pregunta_a}}</h4>
+<pre class="table"><b>{{ejercicio.tabla}}</b></pre>
+<h4 class="pregunta_1">{{ejercicio.pregunta_a}}</h4>
 
 <form method="post">
     {% csrf_token %}
-    <label for="respuesta" >Tu respuesta: </label>
-    <input type="text" name="respuesta_usuario_a" required placeholder="expresea tu respuesta con a lo mas 2 c.s.">
-    <button type="submit" >Comprobar</button>
+    <label for="respuesta" class="label_1">Tu respuesta: </label>
+    <input type="text" name="respuesta_usuario_a" required placeholder="Coloca a lo mas 2 c.s.">
+    <button type="submit" class="boton_enviar">Comprobar</button>
 </form>
 
 {% if mensaje %}
-<p>{{mensaje}}</p>
+<p class="mensaje {{ feedback_clase_a }}"">{{mensaje}}</p>
 {% endif %}
 
 {% if mostrar_pista_a %}
@@ -45,11 +47,11 @@
     {% csrf_token %}
     <label for="respuesta">Tu respuesta: </label>
     <input type="text" name="respuesta_usuario_b" required placeholder="expresea tu respuesta con a lo mas 2 c.s.">
-    <button type="submit" >Comprobar</button>
+    <button type="submit" class="boton_enviar">Comprobar</button>
 </form>
 
 {% if mensaje_b %}
-<p>{{mensaje_b}}</p>
+<p class="mensaje_b {{ feedback_clase_b }}">{{mensaje_b}}</p>
 {% endif %}
 
 {% if mostrar_pista_b %}
@@ -58,7 +60,7 @@
 <pre>{{ejercicio.pista_b}}</pre>
 <form method="post">
     {% csrf_token %}
-    <button type="submit" name="ver_solucion_b" value="1">Ver solucion completa</button>
+    <button type="submit" name="ver_solucion_b" value="1" >Ver solucion completa</button>
 </form>
 {% endif %}
 
@@ -74,6 +76,6 @@
 
 <form method="post">
     {% csrf_token %}
-    <button type="submit" name="otro" value="1">Otro ejercicio</button>
+    <button type="submit" name="otro" value="1" class="boton_otro_ejercicio">Otro ejercicio</button>
 </form>
 {% endblock %}

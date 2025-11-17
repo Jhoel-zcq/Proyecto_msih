@@ -96,19 +96,27 @@ def Tiempo_y_distancia(request):
     mensaje = ""
     mostrar_pista = False
     mostrar_solucion = False
+    ejercicio_imagen = bool(ejercicio.get("imagen"))
+    feedback_clase = ''
 
     if request.method == 'POST':#esto se ejecuta si el usuario envio un formulario, pero sabemos que no es 'otro', asi puede ser 'ver_solucion' o 'respuesta'
         if request.POST.get('ver_solucion'):
             mostrar_solucion = True
+            #contexto['feedback_clase'] = 'correcto' # <- Añadimos la clase al contexto
+            feedback_clase = 'correcto'
         else:#si el usuario mando un formulario 'respuesta', evaluamos su respeusta
             try:
                 respuesta_usuario = float(request.POST.get('respuesta'))
                 if abs(respuesta_usuario - ejercicio.get('valor_correcto', float('inf'))) < 0.01:
                     mensaje = "¡CORRECTO!"
                     mostrar_solucion = True
+                    feedback_clase = 'correcto'
+                    #contexto['feedback_clase'] = 'correcto' # <- Clase para correcto
                 else:
                     mensaje = "Incorrecto."
                     request.session['intentos'] += 1
+                    feedback_clase = 'incorrecto'
+                    #contexto['feedback_clase'] = 'incorrecto' # <- Clase para incorrecto
                     if request.session.get('intentos', 0) >= 1:
                         mostrar_pista = True
             except (ValueError, TypeError, AttributeError):
@@ -121,6 +129,8 @@ def Tiempo_y_distancia(request):
         'mostrar_pista': mostrar_pista,
         'mostrar_solucion': mostrar_solucion,
         'ejercicio_imagen': bool(ejercicio.get("imagen")),
+        #'feedback_clase': contexto.get('feedback_clase', ''),
+        'feedback_clase': feedback_clase,
     }
     return render(request, "prueba/fis100/Tiempo_y_distancia.html", contexto)
 
@@ -180,12 +190,16 @@ def Medición(request):
     mostar_solucion_b = False
     correcta_b = False
     mensaje_b= ""
+    feedback_clase_a = ''
+    feedback_clase_b = ''
     
     if request.method == 'POST':
         if request.POST.get('ver_solucion_a'):
             mostar_solucion_a = True
+            feedback_clase_a = 'correcto'
         elif request.POST.get('ver_solucion_b'):
             mostar_solucion_b = True
+            feedback_clase_b = 'correcto'
         else:
             try:
                 if request.POST.get('respuesta_usuario_a'):
@@ -196,9 +210,11 @@ def Medición(request):
                         request.session['medicion_mostrar_solucion_a'] = True
                         mostar_solucion_a = True
                         correcta_a = True
+                        feedback_clase_a = 'correcto'
                     else:
                         mensaje = "Incorrecto"
                         request.session['intentos'] +=1
+                        feedback_clase_a = 'incorrecto'
                         if request.session.get('intentos',0)>=1:
                             mostar_pista_a =True
                 elif request.POST.get('respuesta_usuario_b'):
@@ -208,11 +224,18 @@ def Medición(request):
                             mensaje_b= "!CORRECTO¡"
                             mostar_solucion_b = True
                             correcta_b = True
+                            feedback_clase_b = 'correcto'
                         else:
                             mensaje_b= "Incorrecto"
                             mostar_pista_b = True
+                            feedback_clase_b = 'incorrecto'
             except (ValueError, TypeError, AttributeError):
-                mensaje = "Ingrese un numero valido por favor"
+                if request.POST.get('respuesta_usuario_a'):
+                    mensaje = "Ingrese un numero valido por favor"
+                    feedback_clase_a = 'incorrecto'
+                elif request.POST.get('respuesta_usuario_b'):
+                    mensaje_b = "Ingrese un numero valido por favor"
+                    feedback_clase_b = 'incorrecto'
         #request.session.mofidied = True
         #return redirect ('Medición')
     
@@ -226,6 +249,8 @@ def Medición(request):
         'mostrar_solucion_b' : mostar_solucion_b,
         'correcta_b' : correcta_b,
         'mensaje_b' : mensaje_b,
+        'feedback_clase_a': feedback_clase_a,
+        'feedback_clase_b': feedback_clase_b,
     }
     
     
@@ -291,16 +316,20 @@ def Vectores(request):
     mensaje = contexto.get('mensaje', "") # Recupera mensajes previos si existen
     mostrar_pista = contexto.get('mostrar_pista', False)
     mostrar_solucion = contexto.get('mostrar_solucion', False)
+    feedback_clase = ''
     
     if request.method == "POST" and not request.POST.get('otro'):
         if request.POST.get('ver_solucion'):
             mostrar_solucion = True
+            mensaje = ""
+            feedback_clase = ''
         elif request.POST.get('respuesta'):
             try:
                 respuesta_usuario = str(request.POST.get('respuesta')).replace(' ','')
                 if respuesta_usuario == contexto.get('respuesta_correcta'):
                     mensaje= "CORRECTO!"
                     mostrar_solucion = True
+                    feedback_clase = 'correcto'
                     vector_a = contexto.get('vector_a')
                     vector_b = contexto.get('vector_b')
                     graficobase64 = generar_grafico_vectores(vector_a, vector_b)
@@ -310,6 +339,7 @@ def Vectores(request):
                     #request.session['ejercicio_vector'] = ejercicio_final
                 else:
                     mensaje = "incorrecto"
+                    feedback_clase = 'incorrecto'
                     mostrar_pista= True
                     intentos = request.session.get('intentos', 0) + 1
                     request.session['intentos'] = intentos
@@ -317,11 +347,13 @@ def Vectores(request):
                         mostrar_pista = True
             except Exception as x:
                 mensaje = f"ingrese un valor valido, {x} no es un valor valido "
+                feedback_clase = 'incorrecto'
     
     
     contexto['mensaje']=mensaje
     contexto['mostrar_pista']=mostrar_pista
     contexto['mostrar_solucion']= mostrar_solucion
+    contexto['feedback_clase'] = feedback_clase
     
     
     
@@ -331,6 +363,7 @@ def Vectores(request):
             "mensaje": mensaje,
             "mostrar_pista": mostrar_pista,
             "mostrar_solucion": mostrar_solucion,
+            "feedback_clase": feedback_clase,
         }
     )
 def Triangulo_vectorial(request):
@@ -435,7 +468,7 @@ def Trabajo_y_energia(request):
 
 # BLOQUE 4: FUNCIONES ALEATORIAS 
 def pagina_aleatoria_fis100(request):
-    paginas = ['Tiempo_y_distancia', 'Medición', 'Rapidez_de_cambio', 'Vectores', 'Triangulo_vectorial', 'Descripción_de_movimiento', 'Fuerzas_y_leyes_de_Newton']
+    paginas = ['Tiempo_y_distancia', 'Medición', 'Vectores', 'Descripción_de_movimiento']
     return redirect(choice(paginas))
 
 def pagina_aleatoria_fis111(request):

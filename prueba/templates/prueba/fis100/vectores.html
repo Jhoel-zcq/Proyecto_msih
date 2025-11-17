@@ -4,30 +4,32 @@
 {% block  css %} <link rel="stylesheet" href="{% static 'prueba/css/fis100/Vectores_style.css' %}"> {%endblock%}
 
 {% block contenido  %}
-<img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
-<h1>Vectores</h1>
+<div class="logo_header">
+    <img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
+    <div class="mish">Vectores</div>
+</div>
 
 <p class="enunciado"> {{ejercicio.enunciado}}</p>
 
 <div >
-    <img class="img" src="data:image/png;base64,{{ ejercicio.grafico_base64 }}" alt="Gráfico de Suma de Vectores" width="600" height="600">
+    <img class="scale-up-center" src="data:image/png;base64,{{ ejercicio.grafico_base64 }}" alt="Gráfico de Suma de Vectores" width="600" height="600">
 </div>
 
 <form method="post">
     {% csrf_token %}
     <label for="respuesta">Respuesta :</label>
     <input type="text" name="respuesta" required placeholder="ejemplo:(a,b)">
-    <button type="submit">Comprobar</button>
+    <button class="boton_enviar" type="submit">Comprobar</button>
 </form>
 
 {% if mensaje %}
-    <p>{{ mensaje }}</p>
+    <p class="mensaje {{ feedback_clase }}">{{ mensaje }}</p>
 {% endif %}
 {% if mostrar_pista %}
     <p><strong>Pista:</strong> Usa la fórmula: {{ ejercicio.formula }}</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit" name='ver_solucion' value="1">Ver solución completa</button>
+        <button class="boton_enviar" type="submit" name='ver_solucion' value="1">Ver solución completa</button>
     </form>
 {% endif %}
 {% if mostrar_solucion %}
@@ -41,7 +43,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <button type="submit" name="otro" value="1" > otro ejercicio </button>
+    <button class="boton_otro_ejercicio" type="submit" name="otro" value="1" > otro ejercicio </button>
 </form>
 
 {% endblock %}

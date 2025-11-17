@@ -17,6 +17,68 @@
 }
 
 
+.mensaje {
+    font-size: 1.5em;
+    font-weight: 700;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out; /* Animación de aparición */
+}
+
+/* Estilo para respuesta CORRECTA */
+.mensaje.correcto {
+    background-color: #d4edda; /* Fondo verde muy claro */
+    color: #155724; /* Texto verde oscuro */
+    border: 1px solid #c3e6cb;
+    animation: pulseCorrect 1s ease-out 3; /* Pulsa 3 veces al aparecer */
+}
+
+/* Estilo para respuesta INCORRECTA */
+.mensaje.incorrecto {
+    background-color: #f8d7da; /* Fondo rojo muy claro */
+    color: #721c24; /* Texto rojo oscuro */
+    border: 1px solid #f5c6cb;
+    animation: shake 0.5s; /* Animación de temblor */
+}
+
+/* Definición de Keyframes para las animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseCorrect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+/* Contenedor de la imagen para centrar y añadir sombra */
+.text-center.my-3 {
+    margin: 20px 0;
+}
+
+/* Estilo y animación para la imagen */
+.text-center.my-3 img {
+    border: 3px solid #0056b3; /* Borde sutil */
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra elegante */
+    transition: transform 0.3s ease-out; /* Transición para el hover */
+}
+
+.text-center.my-3 img:hover {
+    transform: scale(1.02); /* Se agranda ligeramente al pasar el ratón */
+}
 
 
 
@@ -30,4 +92,38 @@
     font-weight: 700;
     letter-spacing: 1px;
     width: 170px;
+    border: 2px solid black;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Botón Comprobar (submit) */
+.boton_enviar, button[name="ver_solucion"] {
+    /* Base */
+    padding: 8px 15px;
+    border-radius: 8px;
+    background-color: #007bff; /* Azul primario */
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.boton_enviar:hover, button[name="ver_solucion"]:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.boton_enviar:active, button[name="ver_solucion"]:active {
+    background-color: #004085;
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.boton_otro_ejercicio:hover {
+    background-color: #00a0b0; /* Un azul cian más oscuro */
+    border-color: #00a0b0;
+    transform: rotate(5deg) scale(1.05); /* Ligeramente más dramático para el reinicio */
 }
