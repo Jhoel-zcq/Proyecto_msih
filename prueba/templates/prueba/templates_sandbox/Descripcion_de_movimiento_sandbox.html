@@ -1,10 +1,62 @@
 {% extends 'prueba/base.html' %}
 {% load static %}
 {% block titulo %} Rapidez de cambio {% endblock %}
-{% block  css %} <!-- <link rel="stylesheet" href="{% static 'prueba/css/index_style.css' %}">--> {%endblock%}
+{% block  css %} <link rel="stylesheet" href="{% static 'prueba/css/sandbox/Descripcion_de_movimiento_sandbox_style.css' %}"> {%endblock%}
 
 {% block contenido  %}
 <h1>Sandbox</h1>
 <h2>Descripcion de movimiento</h2>
+
+<div class="logo_header">
+    <img src="{% static 'prueba/img/Logo_UTFSM.png' %}" alt="Logo" width="100" height="100">
+    
+</div>
+
+<h2>Generador de Gráficos M.R.U.A. / M.R.U.</h2>
+
+<p>{{ mensaje }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="vi">Velocidad Inicial  (m/s):</label>
+    <input type="text" name="vi" value="{{ vi_anterior }}" placeholder="0">
+    <hr>
+    
+    <h3>Intervalos de Aceleración y Tiempo</h3>
+    
+    {% for interval in previous_intervals %} <fieldset style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+        <legend>Intervalo {{ interval.index }}</legend>
+        <label for="a_{{ interval.index }}">Aceleración {{ interval.index }} (m/s²):</label>
+        <input type="text" name="a_{{ interval.index }}" value="{{ interval.a }}" placeholder="ej: 2.5"> <br><br>
+        
+        <label for="t_{{ interval.index }}">Tiempo t (inicio-fin, s):</label>
+        <input type="text" name="t_{{ interval.index }}" value="{{ interval.t }}" placeholder="ej: 0-5"> </fieldset>
+    {% endfor %}
+    
+    <button class="boton_enviar" type="submit" class="boton_enviar">Generar Gráficos</button>
+</form>
+
+{% if graficos %}
+    <hr>
+    <h2>Resultados Gráficos:</h2>
+    
+    {% if graficos.estroboscopico %}
+        <h3>Gráfico Estroboscópico</h3>
+        <img src="data:image/png;base64,{{ graficos.estroboscopico }}" alt="Gráfico Estroboscópico">
+    {% else %}
+        <p>No se generó gráfico estroboscópico (aceleración negativa detectada).</p>
+    {% endif %}
+
+    {% if graficos.aceleracion_tiempo %}
+        <h3>Gráfico Aceleración-Tiempo</h3>
+        <img src="data:image/png;base64,{{ graficos.aceleracion_tiempo }}" alt="Gráfico Aceleración-Tiempo">
+    {% endif %}
+
+    {% if graficos.velocidad_tiempo %}
+        <h3>Gráfico Velocidad-Tiempo</h3>
+        <img src="data:image/png;base64,{{ graficos.velocidad_tiempo }}" alt="Gráfico Velocidad-Tiempo">
+    {% endif %}
+
+{% endif %}
 
 {% endblock %}

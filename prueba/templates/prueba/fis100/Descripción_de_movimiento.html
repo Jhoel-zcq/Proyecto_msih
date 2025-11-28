@@ -10,12 +10,12 @@
 </div>
 
 {% if mensaje  %}
-    <p><strong>{{ mensaje }}</strong></p>
+    <p class="mensaje {{ feedback_clase }}"><strong>{{ mensaje }}</strong></p>
 {% endif %}
 
-<p>Dado el siguiente grafico estroboscopico:</p>
+<p class="enunciado_1">Dado el siguiente grafico estroboscopico:</p>
 
-<img src="data:image/png;base64,{{grafico_estroboscopico}}" alt="grafico estroboscopico">
+<img class="scale-up-center" src="data:image/png;base64,{{grafico_estroboscopico}}" alt="grafico estroboscopico">
 
 <hr>
 <form method="post">
@@ -23,8 +23,10 @@
     <h3>{{ enunciado_at }}</h3>
     {% for opcion in opciones_at %}
     <label>
-        <input type="radio" name="respuesta_at" value="{{opcion}}">
-        <img src="data:image/png;base64,{{opcion}}" alt="opcion at" style="width: 300px;">
+        <div class="graficos">
+            <input type="radio" name="respuesta_at" value="{{opcion}}">
+            <img   src="data:image/png;base64,{{opcion}}" alt="opcion at" style="width: 400px;">
+        </div>
     </label>
     <br>
     {% endfor %}
@@ -33,19 +35,21 @@
     <h3>{{ enunciado_vt }}</h3>
     {% for opcion in opciones_vt %}
     <label>
-        <input type="radio" name="respuesta_vt" value="{{opcion}}">
-        <img src="data:image/png;base64,{{opcion}}" alt="opcion vt" style="width: 300px;">
+        <div class="graficos">
+            <input type="radio" name="respuesta_vt" value="{{opcion}}">
+            <img  class="graficos" src="data:image/png;base64,{{opcion}}" alt="opcion vt" style="width: 400px;">
+        </div>
     </label>
     <br>
     {% endfor %}
     <hr>
     {% endif %}
-    <button type="submit">Comprobar</button>
+    <button class="boton_enviar" type="submit">Comprobar</button>
 </form>
 <hr>
 
 <form  method="post">
     {% csrf_token %}
-    <button type="submit" name="otro" value="1" >Otro ejercicio</button>
+    <button class="boton_otro_ejercicio" type="submit" name="otro" value="1" >Otro ejercicio</button>
 </form>
 {% endblock %}

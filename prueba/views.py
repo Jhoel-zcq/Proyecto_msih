@@ -371,11 +371,16 @@ def Triangulo_vectorial(request):
 
 @never_cache
 def Descripción_de_movimiento(request):
+    feedback_clase = request.session.get('feedback_clase', '')
     if request.method == 'POST' and request.POST.get('otro'):#como siempre, esta es una medida para el bucle 
         if 'ejercicio_movimiento' in request.session:
             del request.session['ejercicio_movimiento']
         if 'vt_correcta' in request.session:
             del request.session['vt_correcta']
+        if 'mensaje' in request.session:
+            del request.session['mensaje']
+        if 'feedback_clase' in request.session:
+            del request.session['feedback_clase']
         request.session.modified = True
         return redirect('Descripción_de_movimiento')
     #comprobacion de la resspuesta usuario
@@ -386,21 +391,28 @@ def Descripción_de_movimiento(request):
             respuesta_usuario_vt = request.POST.get('respuesta_vt')
             if respuesta_usuario_vt == ejercicio['correcta_vt']:
                 request.session['mensaje'] = "¡correcto!!!!!"
+                request.session['vt_correcta'] = True
+                feedback_clase = 'correcto'
                 ejercicio['opciones_vt'] = [ejercicio['correcta_vt']]#guardamos en una lista la grafica correcta
                 request.session['ejercicio_movimiento'] = ejercicio#guardamos en la session
                 
             else:
                 request.session['mensaje'] = "respuesta de velocidad vs tiempo es incorrecto, intentelo de nuevo"
+                feedback_clase = 'incorrecto'
+            request.session['feedback_clase'] = feedback_clase
+            request.session.modified = True
             return redirect('Descripción_de_movimiento')
         if respuesta_usuario_at and ejercicio:
             if respuesta_usuario_at == ejercicio['correcta_at']:#comparamos la respuesta
                 request.session['at_correcta'] = True #guardamos el progreso del usuario
+                feedback_clase = 'correcto'
                 request.session['mensaje'] = "¡CORRECTO!, ahora ¿cúal es la grafica correcta de velocidad vs tiempo?"
                 ejercicio['opciones_at'] = [ejercicio['correcta_at']]# guardamos en una lista la grafica correcta, paar que en el for no nos de error
                 request.session['ejercicio_movimiento'] = ejercicio#guardamos el ejercicio
             else:
                 request.session['mensaje'] = "respuesta de aceleración vs tiempo incorrecta, intentalo de nuevo"
-        
+                feedback_clase = 'incorrecto'
+        request.session['feedback_clase'] = feedback_clase
         request.session.modified = True#forzamos a la sessionlo guarde redirigimos con el retur
         return redirect('Descripción_de_movimiento')
     #ahora creamos un ejercicio si no hay alguno en la sesion
@@ -447,6 +459,7 @@ def Descripción_de_movimiento(request):
     contexto = request.session.get('ejercicio_movimiento',{})#recuperamos el ejercicio si esta en la sesion
     
     contexto['mensaje'] = request.session.get('mensaje',"")#lo mismo, recupera mensaje si hay en el contexto de la sesion
+    contexto['feedback_clase'] = request.session.get('feedback_clase', '')
     
     
     contexto['vt_correcta'] = request.session.get('vt_correcta', False)
@@ -535,4 +548,69 @@ def triangulo_vectorial_sandbox(request):
     return render(request, "prueba/templates_sandbox/triangulo_vectorial_sandbox.html")
 
 def descripcion_de_movimiento_sandbox(request):
-    return render(request,"prueba/templates_sandbox/descripcion_de_movimiento_sandbox.html")
+    graficos = None
+    vi = request.POST.get('vi', 0) if request.method == 'POST' else 0
+    
+    # 1. Pre-procesar inputs para la plantilla (para que persistan en la página)
+    previous_intervals = []
+    for i in range(1, 4):
+        previous_intervals.append({
+            'index': i,
+            'a': request.POST.get(f'a_{i}', ''),
+            't': request.POST.get(f't_{i}', ''),
+        })
+        
+    if request.method == 'POST':
+        try:
+            vi = float(vi) # Convertir la velocidad inicial a float
+            
+            cambiosAceleracion = {}
+            intervalos_ok = True
+            
+            # 2. Procesar los intervalos para generar el gráfico
+            for interval in previous_intervals:
+                a_val = interval['a']
+                t_val = interval['t']
+                
+                if a_val and t_val:
+                    a = float(a_val)
+                    
+                    if '-' in t_val:
+                        t_inicio, t_fin = map(str.strip, t_val.split('-'))
+                        if t_inicio and t_fin:
+                            # Se asume que t_fin > t_inicio, podrías añadir validación aquí
+                            intervalo_key = f"{t_inicio}-{t_fin}"
+                            cambiosAceleracion[intervalo_key] = a
+                        else:
+                            intervalos_ok = False
+                            break
+                    else:
+                        intervalos_ok = False
+                        break
+            
+            if not cambiosAceleracion:
+                mensaje = "Por favor, defina al menos un intervalo de aceleración."
+            elif not intervalos_ok:
+                mensaje = "Error en el formato del intervalo de tiempo (debe ser 't_inicio - t_fin')."
+            else:
+                # 3. Generar gráficos
+                graficos = generarGraficosMRUA(cambiosAceleracion, 
+                                                xi=0, 
+                                                vi=vi, 
+                                                mostrarDatos=["todo"], 
+                                                unidadD="m", 
+                                                unidadT="s")
+                mensaje = "Gráficos generados correctamente."
+                
+        except ValueError:
+            mensaje = "Error: Asegúrese de que todos los valores ingresados (velocidad inicial, aceleración y tiempos) sean números válidos."
+        except Exception as e:
+            mensaje = f"Ocurrió un error inesperado: {e}"
+
+    contexto = {
+        'graficos': graficos,
+        'mensaje': locals().get('mensaje', 'Define tus parámetros de movimiento y genera los gráficos correspondientes.'),
+        'vi_anterior': vi,
+        'previous_intervals': previous_intervals, # <--- Variable corregida
+    }
+    return render(request,"prueba/templates_sandbox/descripcion_de_movimiento_sandbox.html", contexto)

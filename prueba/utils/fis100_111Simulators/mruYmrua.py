@@ -133,11 +133,16 @@ def estroboscopico(cambiosAceleracion, mostrarDatos=[], unidadT="s", testing=Fal
                                     (sum + velocidadesMapeadas[j], 0.05), 
                                     color="xkcd:cobalt blue",
                                     mutation_scale=10))
-        ax.add_patch(FancyArrowPatch((sum, 0.1),
-                                    (sum + aceleracionesMapeadas[j], 0.1),#antes era tiemposMapeados[1], lo cambie pues me daba un pequeño error 
+        #ax.add_patch(FancyArrowPatch((sum, 0.1),
+        #                            (sum + aceleracionesMapeadas[j], 0.1),#antes era tiemposMapeados[1], lo cambie pues me daba un pequeño error 
 
+        #                            color="xkcd:scarlet",
+        #                            mutation_scale=10))
+        scale_factor = 1
+        ax.add_patch(FancyArrowPatch((sum, 0.15),
+                                     (sum + aceleracionesMapeadas[j] * scale_factor, 0.15),
                                     color="xkcd:scarlet",
-                                    mutation_scale=10))
+                                    mutation_scale=15))
         j += 1
 
     ax.set(xlim=(velocidadesMapeadas[0], sum + velocidadesMapeadas[-1]),

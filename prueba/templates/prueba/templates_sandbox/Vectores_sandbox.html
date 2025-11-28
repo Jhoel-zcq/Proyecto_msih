@@ -17,7 +17,7 @@
     <input type="text" name="vector_a" required placeholder="ejemplo(a,b)" value="{{ ejercicio.vector_a_input|default:'' }}">
     <label for="vector_b">Coloca el segundo vector:</label>
     <input type="text" name="vector_b" required placeholder="ejemplo(a,b)" value="{{ ejercicio.vector_b_input|default:'' }}">
-    <button type="submit">Graficar</button>
+    <button class="boton_enviar" type="submit">Graficar</button>
 </form>
 <hr>
 
@@ -27,11 +27,15 @@
     {% endif %}
     {% if ejercicio.grafico_ini %}
     <h4>Vectores iniciales</h4>
-    <img src="data:image/png;base64,{{ejercicio.grafico_ini}}" alt="vectores iniciales" width="600" height="600">
+    <div class="grafica_header">
+        <img  src="data:image/png;base64,{{ejercicio.grafico_ini}}" alt="vectores iniciales" width="600" height="600">
+    </div>
     {% endif %}
     {% if ejercicio.grafico_fi %}
     <h4>Suma vectorial</h4>
-    <img src="data:image/png;base64,{{ejercicio.grafico_fi}}" alt="Suma vectorial" width="600" height="600">
+    <div class="grafica_header">
+        <img  src="data:image/png;base64,{{ejercicio.grafico_fi}}" alt="Suma vectorial" width="600" height="600">
+    </div>
     {% endif %}
 </div>
 
